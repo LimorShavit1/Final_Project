@@ -14,15 +14,20 @@ const validate = [
     check('email').isEmail().withMessage('Please provide a valid email'),
     check('password').isLength({ min: 6 }).withMessage('Your password must beat least 6 characters')
 ]
-
+//define validation for login inputs
 const loginValidation = [
+    check('email').isEmail().withMessage('Please provide a valid email'),
+    check('password').isLength({ min: 6 }).withMessage('Your password must beat least 6 characters')
+]
+//define validation for reset password inputs
+const forgotPasswordValidation = [
     check('email').isEmail().withMessage('Please provide a valid email'),
     check('password').isLength({ min: 6 }).withMessage('Your password must beat least 6 characters')
 ]
 
 const generateToken = user => {
     return jwt.sign(
-        { _id: user._id, email: user.email, fullName: user.fullName}, 'SECRET1234');
+        { _id: user._id, email: user.email, fullName: user.fullName }, 'SECRET1234');
 }
 
 router.post('/Register', validate, async (req, res) => {
@@ -54,7 +59,7 @@ router.post('/Register', validate, async (req, res) => {
         const savedUser = await user.save();
         //create and assign a token
         const token = generateToken(user);
-        //res not includs user password token: we dont whant to store plainText in DB
+        //res not includs user password token: we dont want to store plainText in DB
         res.send({
             success: true,
             data: {
@@ -91,8 +96,43 @@ router.post('/Login', loginValidation, async (req, res) => {
 
     //create and assign a token
     const token = generateToken(user);
-    // attaching the token to th header of our response:
+    // attaching the token to the header of our response:
     res.header('auth-token', token).send({ success: true, message: 'Logged in succesfuly', token })
 });
 
+router.post('/ForgotPassword', forgotPasswordValidation, async (req, res) => {
+    const errors = validationResult(req);
+    //checking in DB we check if we got any user from forgot password form
+    if (!errors.isEmpty()) { //if we have an error
+        return res.status(400).json({ errors: errors.array() });
+    }
+    //check if user's email exist in system
+    const userExist = await User.findOne({ email: req.body.email });
+    if (!userExist) {
+        return res.status(400).send({ success: false, message: 'User is not registered' });
+    } else {
+        //jenerate salt to hash the new password
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+        // console.log('old');
+        // console.log(userExist.password);
+        // console.log('hashed');
+        // console.log(hashPassword);
+
+        //create and assign a token
+        const token = generateToken(userExist);
+        //find & update user's password
+        User.findOneAndUpdate({ _id: userExist._id }, { password: hashPassword }, { useFindAndModify: false })
+            .then(() => {
+                res.status(202).send({
+                    success: true, message: 'Password Changed Successfully', token
+                });
+
+            });
+    }
+
+});
+
 module.exports = router;
+

@@ -1,13 +1,11 @@
-import React from 'react';
-import { StyleSheet, TextField, ImageBackground, TextInput, Text, Image, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup'; // for validation
-import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
+import * as yup from 'yup'; // for validation
 import AsyncStorage from '@react-native-community/async-storage';
 
 import * as authAction from '../redux/actions/authAction';
-
 
 //schema for the validation
 const formSchema = yup.object({
@@ -15,8 +13,7 @@ const formSchema = yup.object({
     password: yup.string().required().min(6)
 })
 
-//navData: LoginScreen component defined in stack navigator it gets spacial props to navigate 
-const LoginScreen = navData => {
+const ForgotPasswordScreen = navData => {
 
     const dispatch = useDispatch();
 
@@ -25,7 +22,7 @@ const LoginScreen = navData => {
             behavior={Platform.OS === 'ios' ? "padding" : "height"}
             style={{ flex: 1 }}
         >
-            <ScrollView>
+            <View style={styles.container}>
                 <Formik
                     initialValues={{
                         //setup the values for each input in the form
@@ -35,7 +32,7 @@ const LoginScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
-                        dispatch(authAction.loginUser(values))
+                        dispatch(authAction.setUserPassword(values))
                             .then(async result => { //get the result from authActionjs: line 70
                                 //the result contain the token
                                 console.log(result);
@@ -43,7 +40,7 @@ const LoginScreen = navData => {
                                     try {
                                         await AsyncStorage.setItem('token', result.token)
                                         //navigate to HomeScreen after success in login request
-                                        navData.navigation.navigate('Home');
+                                        navData.navigation.navigate('Login');
                                     } catch (err) {
                                         console.log(err);
                                     }
@@ -59,10 +56,8 @@ const LoginScreen = navData => {
                     {(props) => (
                         //props pass by formik
                         //function that returns automatically
-                        <View style={styles.container}>
-
-                            <Image source={require('../assets/images/mobileCart.png')} style={styles.image} />
-
+                        <View>
+                            <Text style={styles.setText}>Set Your Password</Text>
 
                             <View>
 
@@ -88,42 +83,36 @@ const LoginScreen = navData => {
                                 <Text>{props.touched.password && props.errors.password}</Text>
 
                                 <TouchableOpacity
-                                    style={styles.forgotPasswordBtn}
-                                    onPress={() => navData.navigation.navigate('ForgotPassword')}
-                                >
-                                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
                                     style={styles.button}
                                     onPress={props.handleSubmit}
                                 >
-                                    <Text style={styles.buttonText}>Login</Text>
+                                    <Text style={styles.buttonText}>Submit</Text>
                                 </TouchableOpacity>
-
-                                <View style={styles.registerContainer}>
-                                    <Text style={styles.registerText}>Don't have account?</Text>
-                                    <TouchableOpacity onPress={() => navData.navigation.navigate('Register')}>
-                                        <Text style={styles.registerButton}> Register</Text>
-                                    </TouchableOpacity>
-                                </View>
                             </View>
                         </View>
                     )}
 
                 </Formik>
-            </ScrollView>
+            </View>
         </KeyboardAvoidingView>
-
     );
+
 }
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#ffffff',
+
+    },
+    setText: {
+        color: "#738289",
+        fontSize: 16,
+        fontWeight: "bold",
+        marginLeft: 60
     },
     logo: {
         alignItems: 'center',
@@ -144,43 +133,19 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     button: {
-        width: 300,
+        width: 200,
         backgroundColor: '#d3d3d3',
         borderRadius: 25,
         marginVertical: 10,
-        paddingVertical: 13
-    },
-    forgotPasswordBtn: {
-        marginBottom: 5
-    },
-    forgotPasswordText:{
-        fontSize: 16,
-        //fontWeight: "bold",
-        color: '#738289',
-        textAlign: 'right'
+        paddingVertical: 13,
+        marginLeft: 50
     },
     buttonText: {
         fontSize: 16,
         fontWeight: "bold",
         color: '#ffffff',
         textAlign: 'center'
-    },
-    registerContainer: {
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        paddingVertical: 16,
-        flexDirection: 'row'
-    },
-    registerText: {
-        color: "#738289",
-        fontSize: 16
-    },
-    registerButton: {
-        color: "#738289",
-        fontSize: 16,
-        fontWeight: "bold"
     }
-
 })
 
-export default LoginScreen;
+export default ForgotPasswordScreen;
