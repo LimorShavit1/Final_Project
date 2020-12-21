@@ -1,8 +1,10 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
+require('dotenv').config();
 
 const User = require('../models/User');
 
@@ -12,6 +14,16 @@ const validate = [
     check('email').isEmail().withMessage('Please provide a valid email'),
     check('password').isLength({ min: 6 }).withMessage('Your password must beat least 6 characters')
 ]
+
+const loginValidation = [
+    check('email').isEmail().withMessage('Please provide a valid email'),
+    check('password').isLength({ min: 6 }).withMessage('Your password must beat least 6 characters')
+]
+
+const generateToken = user => {
+    return jwt.sign(
+        { _id: user._id, email: user.email, fullName: user.fullName}, 'SECRET1234');
+}
 
 router.post('/Register', validate, async (req, res) => {
 
@@ -25,7 +37,7 @@ router.post('/Register', validate, async (req, res) => {
 
     //check if user already exist --> prevent duplicate email
     const userExist = await User.findOne({ email: req.body.email });
-    if(userExist) return res.status(400).send('Email alredy exists');
+    if (userExist) return res.status(400).send({ success: false, message: 'Email already exists' });
 
     //jenerate salt to hash password
     const salt = await bcrypt.genSalt();
@@ -40,17 +52,47 @@ router.post('/Register', validate, async (req, res) => {
 
     try {
         const savedUser = await user.save();
-        //res not includs user password token
-        res.send({ id: savedUser._id, fullName: savedUser.fullName, email: savedUser.email });
+        //create and assign a token
+        const token = generateToken(user);
+        //res not includs user password token: we dont whant to store plainText in DB
+        res.send({
+            success: true,
+            data: {
+                id: savedUser._id,
+                fullName: savedUser.fullName,
+                email: savedUser.email
+            },
+            token
+
+        });
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).send({ success: false, error });
     }
 
 });
 
-router.post('/Login', (req, res) => {
-    res.send('Login')
+router.post('/Login', loginValidation, async (req, res) => {
 
+    // validate data against validation rules in "loginValidation"
+    const errors = validationResult(req);
+    //begor checking in DB we check if we got any user fro login form
+    if (!errors.isEmpty()) { //if we have an error
+        return res.status(400).json({ errors: errors.array() });
+
+    }
+
+    //check if email exist in system
+    const user = await User.findOne({ email: req.body.email })
+    if (!user) return res.status(400).send({ success: false, message: 'User is not registered' });
+
+    //check if password correct
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) return res.status(404).send({ success: false, message: 'Invalid Email or Password' });
+
+    //create and assign a token
+    const token = generateToken(user);
+    // attaching the token to th header of our response:
+    res.header('auth-token', token).send({ success: true, message: 'Logged in succesfuly', token })
 });
 
 module.exports = router;

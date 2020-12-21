@@ -1,8 +1,12 @@
 import React from 'react';
-import { StyleSheet, TextField, ImageBackground, TextInput, Text, Image, View, ScrollView, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextField, ImageBackground, TextInput, Text, Image, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Alert } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup'; // for validation
 import { MaterialIcons } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
+
+import * as authAction from '../redux/actions/authAction';
 
 
 //schema for the validation
@@ -13,6 +17,9 @@ const formSchema = yup.object({
 
 //navData: LoginScreen component defined in stack navigator it gets spacial props to navigate 
 const LoginScreen = navData => {
+
+    const dispatch = useDispatch();
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? "padding" : "height"}
@@ -28,10 +35,25 @@ const LoginScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
-                        //console.log('in');
-                        console.log(values);
-                        //navigate to homepage 
-                        navData.navigation.navigate('Home');
+                        dispatch(authAction.loginUser(values))
+                            .then(async result => { //get the result from authActionjs: line 70
+                                //the result contain the token
+                                console.log(result);
+                                if (result.success) {
+                                    try {
+                                        await AsyncStorage.setItem('token', result.token)
+                                        //navigate to HomeScreen after success in login request
+                                        navData.navigation.navigate('Home');
+                                    } catch (err) {
+                                        console.log(err);
+                                    }
+                                } else {
+                                    //this will bting the message we have in the result obj
+                                    Alert.alert(result.message);
+                                }
+                            })
+                            .catch(err => console.log(err));
+
                     }}
                 >
                     {(props) => (

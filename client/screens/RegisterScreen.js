@@ -1,7 +1,11 @@
 import React from 'react';
-import { StyleSheet, TextField, ImageBackground, TextInput, Text, Image, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, TextField, ImageBackground, TextInput, Text, Image, View, ScrollView, KeyboardAvoidingView, TouchableOpacity, Platform, Alert } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup'; // for validation
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
+
+import * as authAction from '../redux/actions/authAction';
 
 
 //schema for the validation
@@ -12,6 +16,9 @@ const formSchema = yup.object({
 })
 //navData: LoginScreen component defined in stack navigator it gets spacial props to navigate 
 const RegisterScreen = navData => {
+
+    const dispatch = useDispatch();
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? "padding" : "height"}
@@ -28,10 +35,22 @@ const RegisterScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
-                        //console.log('in');
-                        console.log(values);
-                        //navigate to HomeScreen after registeration
-                        navData.navigation.navigate('Home');
+                        dispatch(authAction.registerUser(values))
+                            .then(async result => {
+                                if (result.success) {
+                                    try {
+                                        await AsyncStorage.setItem('token', result.token)
+                                        //navigate to HomeScreen after successful registeration
+                                        //the 'result' obj contain the token
+                                        navData.navigation.navigate('Home');
+                                    } catch (err) {
+                                        console.log(err);
+                                    }
+                                } else {
+                                    Alert.alert('Registration failed. Try Again');
+                                }
+                            })
+                            .catch(err => console.log(err));
                     }}
                 >
                     {(props) => (
@@ -93,7 +112,7 @@ const RegisterScreen = navData => {
 
                 </Formik>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
 
     );
 }
