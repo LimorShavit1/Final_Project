@@ -6,7 +6,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-community/async-storage';
 
+
+
 import * as authAction from '../redux/actions/authAction';
+
 
 
 //schema for the validation
@@ -53,6 +56,7 @@ const LoginScreen = navData => {
                                 }
                             })
                             .catch(err => console.log(err));
+
 
                     }}
                 >
@@ -153,7 +157,7 @@ const styles = StyleSheet.create({
     forgotPasswordBtn: {
         marginBottom: 5
     },
-    forgotPasswordText:{
+    forgotPasswordText: {
         fontSize: 16,
         //fontWeight: "bold",
         color: '#738289',

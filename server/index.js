@@ -7,6 +7,7 @@ app.use(express.json());
 //middleware:
 const authRoutes = require('./routes/auth');
 const verifyToken = require('./routes/verifyToken');
+const listItem = require('./routes/list');
 
 app.get('/', (req, res) => {
     res.send('welcome to home route');
@@ -18,8 +19,9 @@ app.get('/api/user/profile', verifyToken , (req, res) => {
     res.send({success: true , data: req.user});
 });
 
-//middleware:
+//middleware:  
 app.use('/api/users', authRoutes);
+app.use('/api/list', listItem);
 
 
 

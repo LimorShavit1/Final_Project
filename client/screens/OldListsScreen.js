@@ -3,11 +3,11 @@ import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpaci
 
 
 
-const FavoriteListsScreen = () =>{
+const OldListsScreen = () =>{
 
     return (
         <View>
-            <Text>In Favorite Lists Screen</Text>
+            <Text>In OldListsScreen</Text>
         </View>
     );
 }
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default FavoriteListsScreen;
+export default OldListsScreen;
