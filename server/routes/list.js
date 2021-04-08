@@ -1,4 +1,5 @@
 const express = require('express');
+const { check, validationResult } = require('express-validator');
 const router = express.Router();
 const axios = require('axios');
 
@@ -7,32 +8,53 @@ const fs = require('fs');
 require('dotenv').config();
 
 //const data = "action=GetProductsByName&product_name[]=ביסלי&limit=2&api_key=a9a90c30415df0e3e749467e5334e70eb566407b";
-
 //const data = "action=GetProductsByName&product_name[]=במבה)&limit=2&api_key=a9a90c30415df0e3e749467e5334e70eb566407b";
 
+//define validation for product inputs
+const validateProduct = [
+    check('productName').isLength({ min: 2 }).withMessage('Product name inValid. Must contain atleast 2 characters'),
+]
 
-router.post('/findItemByName', async () => {
-//const data = "action=GetProductsByName&product_name[]=יסלי)&limit=3&api_key=a9a90c30415df0e3e749467e5334e70eb566407b";
+router.post('/findItemByName', validateProduct, async (req, res) => {
+    //const data = "action=GetProductsByName&product_name[]=יסלי)&limit=3&api_key=a9a90c30415df0e3e749467e5334e70eb566407b";
+    // const productName = 'ביסלי';
 
+    // validate data against validation rules in "validateProduct"
+    const errors = validationResult(req);
 
-    const res = await axios.post('https://api.superget.co.il/', "action=GetProductsByName&product_name[]=ביסלי&limit=2&api_key=a9a90c30415df0e3e749467e5334e70eb566407b",
-        {
-            headers: {
-                "Content-type": "application/x-www-form-urlencoded",
-                "charset" : "utf-8"
-            }
-        })
-        .then((data) => {
-            fs.writeFile('./test.txt',  JSON.stringify(data.data), function (err) {
-                if (err) return console.log(err);
-                console.log('Data in file!');
-              });
-            console.log('data', data.data)
-        })
-        .catch((err) => {
-            console.log('error', err)
-        })
+    if (!errors.isEmpty()) { //if we have an input error
+        return res.status(400).json({ errors: errors.array() });
 
+    } else {
+        //extract product name from req.body
+        const productName = req.body.productName;
+        //console.log(productName);
+
+        //http call to get all products info'
+        const result = await axios.post('https://api.superget.co.il/', `action=GetProductsByName&product_name[]=${productName}&limit=50&api_key=9eed50fb6a59631980db20579f7e840cfca426b1`,
+            {
+                headers: {
+                    "Content-type": "application/x-www-form-urlencoded",
+                    "charset": "utf-8"
+                }
+            })
+            .then((productData) => {
+                fs.writeFile('./test.txt', JSON.stringify(productData.data), function (err) {
+                    if (err) return console.log(err);
+                    console.log('Data in file!');
+
+                }); 
+                console.log('data', productData.data);
+                const Pdata = JSON.stringify(productData.data);
+                if (!Pdata) return res.status(404).send({ success: false, message: 'No Data' });
+
+                // attaching the data to the header of our response:
+                res.send({ success: true, message: 'Fetch Data Succesfuly', Pdata })
+            })
+            .catch((err) => {
+                console.log('error', err)
+            })
+    }
 });
 
 module.exports = router;

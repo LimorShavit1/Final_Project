@@ -12,9 +12,10 @@ import HomeScreen from '../screens/HomeScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import FavoriteListsScreen from '../screens/FavoriteListsScreen';
 import SearchListScreen from '../screens/SearchListScreen';
-import CreateListScreen from '../screens/CreateListScreen';
+import AddHomeScreen from '../screens/AddHomeScreen';
 import OldListsScreen from '../screens/OldListsScreen';
-
+import ListDetailsScreen from '../screens/ListDetailsScreen';
+import SearchProductScreen from '../screens/SearchProductScreen';
 import { DrawerContent } from './DrawerContent';
 
 const Stack = createStackNavigator();
@@ -65,15 +66,24 @@ function HomeStackNavigator() {
             />
 
             <Stack.Screen name="NewList"
-                component={CreateListScreen}
-               
+                component={AddHomeScreen}
+
+            />
+
+            <Stack.Screen name="SearchProduct"
+                component={SearchProductScreen}
+
+            />
+
+            <Stack.Screen name="List"
+                component={ListDetailsScreen}
             />
 
             <Stack.Screen name="OldLists"
                 component={OldListsScreen}
                 options={{ headerLeft: null }}
             />
-            
+
 
         </Stack.Navigator>
     );
@@ -125,6 +135,7 @@ function AppNavigator() {
                     options={{ headerShown: false }}
                 />
 
+
                 <Stack.Screen
                     name="ForgotPassword"
                     component={ForgotPasswordScreen}
@@ -134,5 +145,6 @@ function AppNavigator() {
         </NavigationContainer >
     );
 }
+
 
 export default AppNavigator;

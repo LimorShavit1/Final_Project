@@ -1,32 +1,32 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-
+import {StyleSheet, View, Text, ImageBackground, TouchableOpacity} from 'react-native';
 
 const Card = props => {
-   // console.log(props);
-    return (
+    return(
         <TouchableOpacity
-            onPress={()=> props.navigation.navigate('Home')}
+            onPress={() => props.navigation.navigate('List', {
+              houseId: props.id
+            })}
         >
             <View style={styles.card}>
-
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Title 3-bedroom modern</Text>
+                    <Text style={styles.title}>
+                      {props.ListName.length > 30 ? props.title.slice(0, 30) + '...' : props.ListName}
+                    </Text>
                 </View>
-
                 <View style={styles.imageContainer}>
-                    
-                        <Text style={styles.price}>Price: $200,000</Text>
+                    <ImageBackground source={{ uri: 'https://cdn1.iconfinder.com/data/icons/shopping-and-commerce-2-9/134/197-512.png' }} style={styles.image}>
+                        
                         <View style={styles.year}>
-                            <Text style={styles.yearText}>2020</Text>
+                            <Text style={styles.yearText}></Text>
                         </View>
-                  
+                    </ImageBackground>
                 </View>
-
                 <View style={styles.description}>
-                    <Text style={styles.descriptionText}>Description</Text>
+                    <Text style={styles.descriptionText}>
+                      Click to manage your list
+                    </Text>
                 </View>
-
             </View>
         </TouchableOpacity>
     );
@@ -36,72 +36,59 @@ const styles = StyleSheet.create({
     card: {
         shadowColor: 'black',
         shadowOpacity: 0.25,
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 2},
         shadowRadius: 8,
         borderRadius: 10,
         backgroundColor: '#ffffff',
         elevation: 5,
-        height: 300,
+        height: 250,
         margin: 10
-
-    },
-
-    titleContainer: {
+      },
+      titleContainer: {
         height: '15%',
         padding: 10
-
-    },
-
-    title: {
+      },
+      title: {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'gray'
-    },
-
-    imageContainer: {
+      },
+      imageContainer: {
         width: '100%',
         height: '65%',
         overflow: 'hidden'
-    },
-
-    image: {
+      },
+      image: {
         width: '100%',
         height: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-end'
-
-    },
-
-    price: {
+      },
+      price: {
         fontSize: 30,
         color: '#fff',
         margin: 10
-    },
-
-    year: {
+      },
+      year: {
         margin: 10,
         backgroundColor: '#2652B0',
         height: 25,
         width: 80,
         borderRadius: 5
-    },
-
-    yearText: {
+      },
+      yearText: {
         fontSize: 20,
         color: '#fff',
         textAlign: 'center'
-    },
-
-    description: {
+      },
+      description: {
         margin: 10
-    },
-
-    descriptionText: {
+      },
+      descriptionText: {
         fontSize: 16,
         color: 'gray'
-    }
-
+      }
 });
 
 export default Card;

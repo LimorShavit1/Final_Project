@@ -69,7 +69,8 @@ export function DrawerContent(props) {
                             />
                             <View>
                                 <View style={{ marginLeft: 15, flexDirection: 'column' }}>
-                                    <Title style={styles.title}>{translation('Name here')} </Title>
+                                <Title style={styles.title}>#NAME# </Title>
+
                                     <Caption style={styles.caption}>##E-mail##</Caption>
                                 </View>
 

@@ -76,6 +76,14 @@ router.post('/Register', validate, async (req, res) => {
 
 });
 
+router.get('/', (req, res) => {
+    User.find()
+        .then(users => {
+            res.send(users)
+        })
+        .catch(err => console.log(err))
+});
+
 router.post('/Login', loginValidation, async (req, res) => {
 
     // validate data against validation rules in "loginValidation"
