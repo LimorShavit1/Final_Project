@@ -31,7 +31,8 @@ router.post('/findItemByName', validateProduct, async (req, res) => {
         //console.log(productName);
 
         //http call to get all products info'
-        const result = await axios.post('https://api.superget.co.il/', `action=GetProductsByName&product_name[]=${productName}&limit=50&api_key=9eed50fb6a59631980db20579f7e840cfca426b1`,
+        const result = await axios.post('https://api.superget.co.il/', 
+        `action=GetProductsByName&product_name[]=${productName}&limit=30&api_key=68b97541d385fd08cac3da99dcf0e9235c1a74c6`,
             {
                 headers: {
                     "Content-type": "application/x-www-form-urlencoded",

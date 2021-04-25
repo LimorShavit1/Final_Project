@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup'; // for validation
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'react-native-elements'
 import { Feather } from '@expo/vector-icons';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
+
+import Card from '../components/Card';
+import ProductCard from '../components/ProductCard';
 import * as listAction from '../redux/actions/listAction';
 
 
@@ -22,14 +26,60 @@ const SearchProductScreen = props => {
 
     const dispatch = useDispatch();
     var products_list = [];
+    //const DATA = [{ s: 1 }, { s: 2 }, { s: 3 }];
     const [FetchingProductsSucced, setFetchingProductsSucced] = useState(false);
+    const [ListId, setListId] = useState(listId);
+    const [Product, setProduct] = useState('');
+    const [ProductsList, setProductsList] = useState([]);
 
     useEffect(() => {
-        console.log(products_list);
-        PushDataToList(products_list);
-        //console.log(products_list);
-        console.log("limor");
+        //console.log("limor useEffect -1-");
+        //console.log(ProductsList.toString())
+        //console.log("limor useEffect -2-");
     }, [FetchingProductsSucced]);
+
+    //??
+    //const {products} = useSelector(state => state.product);
+    //if not using in flatlist--> delete!
+    const renderItemF = ({ item }) => {
+        console.log("line45")
+        return (
+            <ProductCard
+                product_name={item.product_name}
+                product_barcode={item.product_barcode}
+            />
+        );
+    }
+    //render ProductCard component
+    if (FetchingProductsSucced) {
+        if (ProductsList) {
+            products_list = ProductsList;
+            console.log(ProductsList);
+            return (
+                <View>
+                    <FlatList
+                        data={ProductsList[0]}
+                        keyExtractor={item => item.product_barcode}
+                        renderItem={({ item }) => (
+                            // move to ProductCard component & send this props:
+                            <ProductCard
+                                product_name={item.product_name}
+                                product_barcode={item.product_barcode}
+                                product_unit_name={item.product_unit_name}
+                                manufacturer_id={item.manufacturer_id}
+                                product_description={item.product_description}
+                                manufacturer_name={item.manufacturer_name}
+                                product_image={item.product_image}
+                                quantity={'1'}
+                                list_id={ListId}
+                            />
+
+                        )}
+                    />
+                </View>
+            );
+        }
+    }
 
     return (
 
@@ -51,43 +101,33 @@ const SearchProductScreen = props => {
                         dispatch(listAction.findProductByName(values))
                             .then(async result => { //get the result from listAction.js
                                 // console.log(result);
+
                                 if (result.success) {
                                     try {
-                                        // server send response with all relevant products
-                                        //const obj = JSON.parse(result);
-                                        //console.log(result.Pdata); 
+                                        //Pdata --> from backend
+                                       
+                                        products_list.push(JSON.parse(result.Pdata));
+                                        // console.log(' T-1-');
+                                        //console.log(products_list);
+                                        //console.log('T -2-');
 
-                                        products_list = JSON.parse(result.Pdata);
-                                        /*for (let i = 0; i <test.length; i++) {
-                                            console.log(test[i].product_name);
-                                        }
+                                        // setProductsList([...ProductsList,products_list]);
+                                        // console.log('products_listc1');
+                                        // console.log(ProductsList);
+                                        // console.log('products_listc2');
 
-                                        console.log("******************** " + test[0].product_id);
-                                        for (let i = result.length; i > 0; i--) {
-                                            products_list.push(result[i]);
-                                        }
-                                        console.log('line 61');
-                                        */
-                                        console.log(products_list[2].product_name);
-                                        console.log('line 64');
 
+                                        // for (let i = 0; i < products_list.length; i++) {
+                                        //     tmp_product = products_list[i];
+                                        //     setProduct(tmp_product);
+                                        //     console.log('********************* ' + tmp_product.product_name);
+                                        //     setProductsList([...ProductsList, Product]);
+                                        //     //console.log(tmp_product.product_name);
+                                        // }
+
+                                        setProductsList([...products_list]);
                                         setFetchingProductsSucced(true);
 
-                                        // const { products } = useSelector(state => state.product);
-
-                                        // //add all products to 'products' array
-                                        // for (let i = products.length; i > 0; i--) {
-                                        //     products_list.push(products[i]);
-                                        // }
-                                        // console.log('data in products_list:');
-                                        // console.log(products_list);
-                                        // console.log('linr 60 the end');
-
-
-
-                                        //await AsyncStorage.setItem('token', result.token)
-                                        //navigate to HomeScreen after success in login request
-                                        // navData.navigation.navigate('Home');
                                     } catch (err) {
                                         console.log(err);
                                     }
@@ -97,8 +137,6 @@ const SearchProductScreen = props => {
                                 }
                             })
                             .catch(err => console.log(err));
-
-
                     }}
                 >
                     {(props) => (
@@ -152,9 +190,20 @@ const PushDataToList = (products_list) => {
 
 }
 
+const callYo = () => {
+    console.log("in!!!!! CallYooooo");
+    //console.log(ProductsList);
+    return (
+        <View>
+
+        </View>
+
+    );
+}
+
 const styles = StyleSheet.create({
     searchSection: {
-        flex: 1,
+        flex: 3,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'baseline',

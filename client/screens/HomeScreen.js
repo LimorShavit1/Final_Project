@@ -51,12 +51,14 @@ const HomeScreen = props => {
     var lists = [];
     const { houses } = useSelector(state => state.house);
     
+    
     //filter to see only my or shared with me lists(improve runtime*)
 
     for (let i = houses.length; i > 0; i--) {
         for (let j = 0; j < houses[i-1].CustumerID.length; j++)
             if (houses[i-1].CustumerID[j] == _id) {
                 lists.push(houses[i-1]);
+                console.log(houses[i-1]);
             }
 
     }

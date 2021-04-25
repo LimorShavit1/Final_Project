@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose'); // use mongoose to connect to DB
-
-
+const cors = require('cors');
+app.use(cors())
 app.use(express.json());
 //middleware:
 const authRoutes = require('./routes/auth');
@@ -11,7 +11,7 @@ const houses = require('./routes/houses');
 const listItem = require('./routes/list');
 
 
-mongoose.connect('mongodb+srv://limorsh:limorsagi123@cluster0.ymfp4.mongodb.net/auth_system?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ymfp4.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
     { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         //connect web:
@@ -50,4 +50,3 @@ app.use('/api/list', listItem);
 //mongoose.connect('mongodb+srv://limorsh:limorsagi123@cluster0.ymfp4.mongodb.net/auth_system?retryWrites=true&w=majority',
 //require('dotenv').config();
 //mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ymfp4.mongodb.net/auth_system?retryWrites=true&w=majority`,
-
