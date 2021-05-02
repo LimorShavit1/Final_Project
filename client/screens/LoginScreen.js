@@ -38,6 +38,8 @@ const LoginScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
+                        values.email = values.email.toLowerCase();
+                        
                         dispatch(authAction.loginUser(values))
                             .then(async result => { //get the result from authActionjs: line 70
                                 //the result contain the token

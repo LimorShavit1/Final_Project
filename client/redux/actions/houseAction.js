@@ -1,7 +1,9 @@
 export const FETCH_HOUSES = 'FETCH_HOUSES';
 export const CREATE_HOUSES = 'CREATE_HOUSES';
 
-const BASE_URL = 'http://192.168.56.1:3000';
+//const BASE_URL = 'http://192.168.56.1:3000';
+const BASE_URL = 'https://final2704.herokuapp.com';
+
 
 export const fetchHouses = () => {
     return async dispatch => {

@@ -95,7 +95,7 @@ router.post('/Login', loginValidation, async (req, res) => {
     }
 
     //check if email exist in system
-    const user = await User.findOne({ email: req.body.email })
+    const user = await User.findOne({ email: req.body.email.toLowerCase() })
     if (!user) return res.status(400).send({ success: false, message: 'User is not registered' });
 
     //check if password correct

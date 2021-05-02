@@ -35,6 +35,7 @@ const RegisterScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
+                        values.email = values.email.toLowerCase();
                         dispatch(authAction.registerUser(values))
                             .then(async result => {
                                 if (result.success) {

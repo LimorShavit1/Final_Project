@@ -2,7 +2,9 @@ export const FIND_PRODUCT_SUCCESS = 'FIND_ITEM_SUCCESS';
 export const FIND_PRODUCT_FAIL = 'FIND_ITEM_FAIL';
 
 
-const BASE_URL = 'http://192.168.56.1:3000';
+//const BASE_URL = 'http://192.168.56.1:3000';
+const BASE_URL = 'https://final2704.herokuapp.com';
+
 
 export const findProductByName = (itemData) => {
 

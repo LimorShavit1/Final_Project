@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup'; // for validation
+import * as yup from 'yup'; // for input validation
 import { useDispatch, useSelector } from 'react-redux';
+import { SearchBar } from 'react-native-elements';
 import { Icon } from 'react-native-elements'
 import { Feather } from '@expo/vector-icons';
-import { SwipeListView } from 'react-native-swipe-list-view';
 
 
-import Card from '../components/Card';
 import ProductCard from '../components/ProductCard';
 import * as listAction from '../redux/actions/listAction';
 
@@ -29,39 +28,54 @@ const SearchProductScreen = props => {
     //const DATA = [{ s: 1 }, { s: 2 }, { s: 3 }];
     const [FetchingProductsSucced, setFetchingProductsSucced] = useState(false);
     const [ListId, setListId] = useState(listId);
-    const [Product, setProduct] = useState('');
+    const [search, setSearch] = useState('');
+    //const [Product, setProduct] = useState('');
     const [ProductsList, setProductsList] = useState([]);
 
     useEffect(() => {
         //console.log("limor useEffect -1-");
-        //console.log(ProductsList.toString())
-        //console.log("limor useEffect -2-");
     }, [FetchingProductsSucced]);
 
-    //??
-    //const {products} = useSelector(state => state.product);
-    //if not using in flatlist--> delete!
-    const renderItemF = ({ item }) => {
-        console.log("line45")
-        return (
-            <ProductCard
-                product_name={item.product_name}
-                product_barcode={item.product_barcode}
-            />
-        );
-    }
+
     //render ProductCard component
     if (FetchingProductsSucced) {
         if (ProductsList) {
             products_list = ProductsList;
             console.log(ProductsList);
             return (
-                <View>
+                <View style={styles.productsList}>
+                    <View style={styles.searchSection}>
+                        <TouchableOpacity
+                            onPress={props.handleSubmit}
+                        >
+                            <Icon style={styles.searchIcon} name="search" size={25} color="#000" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => textInput.clear()}
+                        >
+                            <Feather name="x" size={15} color="black" />
+                        </TouchableOpacity>
+
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Search Product"
+                            onChangeText={props.handleChange('productName')}
+                            value={props.values.productName}
+                            onBlur={props.handleBlur('productName')}
+                            ref={input => { textInput = input }}
+                        />
+
+                    </View>
+                    <View style={styles.errorView}>
+                        <Text style={styles.errorTxt}>{props.touched.productName && props.errors.productName}</Text>
+                    </View>
                     <FlatList
                         data={ProductsList[0]}
                         keyExtractor={item => item.product_barcode}
                         renderItem={({ item }) => (
-                            // move to ProductCard component & send this props:
+                            // Move to ProductCard component & send this data as a props:
                             <ProductCard
                                 product_name={item.product_name}
                                 product_barcode={item.product_barcode}
@@ -81,6 +95,7 @@ const SearchProductScreen = props => {
         }
     }
 
+
     return (
 
         <KeyboardAvoidingView
@@ -99,31 +114,14 @@ const SearchProductScreen = props => {
                         //sent req to backend
                         console.log(values);
                         dispatch(listAction.findProductByName(values))
-                            .then(async result => { //get the result from listAction.js
+                            .then(async result => {
+                                //get the result from listAction.js
                                 // console.log(result);
 
                                 if (result.success) {
                                     try {
                                         //Pdata --> from backend
-                                       
                                         products_list.push(JSON.parse(result.Pdata));
-                                        // console.log(' T-1-');
-                                        //console.log(products_list);
-                                        //console.log('T -2-');
-
-                                        // setProductsList([...ProductsList,products_list]);
-                                        // console.log('products_listc1');
-                                        // console.log(ProductsList);
-                                        // console.log('products_listc2');
-
-
-                                        // for (let i = 0; i < products_list.length; i++) {
-                                        //     tmp_product = products_list[i];
-                                        //     setProduct(tmp_product);
-                                        //     console.log('********************* ' + tmp_product.product_name);
-                                        //     setProductsList([...ProductsList, Product]);
-                                        //     //console.log(tmp_product.product_name);
-                                        // }
 
                                         setProductsList([...products_list]);
                                         setFetchingProductsSucced(true);
@@ -142,34 +140,43 @@ const SearchProductScreen = props => {
                     {(props) => (
                         //props pass by formik
                         //function that returns automatically
-                        <View style={styles.searchSection}>
+                        <View>
+                            <View style={styles.searchSection}>
 
-                            <TouchableOpacity
-                                onPress={props.handleSubmit}
-                            >
-                                <Icon style={styles.searchIcon} name="search" size={25} color="#000" />
-                            </TouchableOpacity>
+                                {/* <SearchBar
+                                round
+                                searchIcon={{ size: 24 }}
+                                onChangeText={(text) => setSearch(text)}
+                                onClear={(text) => setSearch('')}
+                                placeholder="Type Here..."
+                                value={search}
+                            /> */}
+                                <TouchableOpacity
+                                    onPress={props.handleSubmit}
+                                >
+                                    <Icon style={styles.searchIcon} name="search" size={25} color="#000" />
+                                </TouchableOpacity>
 
-                            <TouchableOpacity
-                                onPress={() => textInput.clear()}
-                            >
-                                <Feather name="x" size={15} color="black" />
-                            </TouchableOpacity>
-
-
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Search Product"
-                                onChangeText={props.handleChange('productName')}
-                                value={props.values.productName}
-                                onBlur={props.handleBlur('productName')}
-                                ref={input => { textInput = input }}
-                            />
-
-                            <Text>{props.touched.productName && props.errors.productName}</Text>
+                                <TouchableOpacity
+                                    onPress={() => textInput.clear()}
+                                >
+                                    <Feather name="x" size={15} color="black" />
+                                </TouchableOpacity>
 
 
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Search Product"
+                                    onChangeText={props.handleChange('productName')}
+                                    value={props.values.productName}
+                                    onBlur={props.handleBlur('productName')}
+                                    ref={input => { textInput = input }}
+                                />
 
+                            </View>
+                            <View style={styles.errorView}>
+                                <Text style={styles.errorTxt}>{props.touched.productName && props.errors.productName}</Text>
+                            </View>
                         </View>
                     )}
 
@@ -181,29 +188,14 @@ const SearchProductScreen = props => {
 
 }
 
-const PushDataToList = (products_list) => {
-    console.log("products_list");
-    console.log(products_list);
 
-    console.log("PushDataToList");
-
-
-}
-
-const callYo = () => {
-    console.log("in!!!!! CallYooooo");
-    //console.log(ProductsList);
-    return (
-        <View>
-
-        </View>
-
-    );
-}
 
 const styles = StyleSheet.create({
+    bigV: {
+        marginTop: 100,
+    },
     searchSection: {
-        flex: 3,
+        flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'baseline',
@@ -218,8 +210,15 @@ const styles = StyleSheet.create({
         borderBottomColor: "#ccc",
         borderBottomWidth: 1.7,
     },
+    errorView: {
+        marginTop: 5,
+        marginLeft: 110,
+    },
+    errorTxt: {
+        color: '#ff4500'
+    },
     form: {
-        flex: 1,
+        //flex: 1,
         margin: 20,
         backgroundColor: "#ffffff",
         padding: 20,
@@ -227,6 +226,9 @@ const styles = StyleSheet.create({
     },
     searchIcon: {
         padding: 10,
+    },
+    productsList: {
+        marginTop: 10,
     },
 });
 
