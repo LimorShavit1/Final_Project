@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     Avatar,
     Title,
@@ -13,7 +14,9 @@ import {
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-community/async-storage';
 import jwtDecode from 'jwt-decode';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { AntDesign } from '@expo/vector-icons';
+
 import { useTranslation } from 'react-i18next';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,22 +25,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export function DrawerContent(props) {
 
-    const [userName, setuserName] = useState('');
-    const [email, setEmail] = useState('');
+    const user = useSelector(state => state.auth.user)
 
-    const loadUserProfile = async () => {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-            props.navigation.navigate('Login');
-        }
-        //extract data er have in the token
-        const decoded = jwtDecode(token);
-        console.log("3333333333333333333333333");
-        setuserName(decoded.userName);
-        setEmail(decoded.email);
-        console.log(decoded);
-
-    }
 
     const logOut = props => {
         //while logging out we want to remove our token
@@ -52,7 +41,7 @@ export function DrawerContent(props) {
 
     //this will be triggered when we load this component
     useEffect(() => {
-        loadUserProfile();
+        //loadUserProfile();
     });
 
     return (
@@ -69,9 +58,9 @@ export function DrawerContent(props) {
                             />
                             <View>
                                 <View style={{ marginLeft: 15, flexDirection: 'column' }}>
-                                <Title style={styles.title}>#NAME# </Title>
+                                <Title style={styles.title}>{user.fullName}</Title>
 
-                                    <Caption style={styles.caption}>##E-mail##</Caption>
+                                    <Caption style={styles.caption}>{user.email}</Caption>
                                 </View>
 
                             </View>
@@ -81,12 +70,15 @@ export function DrawerContent(props) {
 
                         <DrawerItem
                             icon={({ color, size }) => (
-                                <AntDesign name="adduser"
+                                <MaterialCommunityIcons name="history"
                                     size={size}
                                     color={color} />
                             )}
-                            label='הוסף משתמש'
-                            onPress={() => { }}
+                            label='היסטוריית הרכישות'
+                            onPress={() => props.navigation.navigate('OldLists', {
+                                userID: user._id,
+                                
+                              })}
                         />
 
                     </Drawer.Section>

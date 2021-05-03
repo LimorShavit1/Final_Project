@@ -1,9 +1,5 @@
-//import { useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View, Text, ImageBackground, TouchableOpacity } from 'react-native';
-
-//import NumericInput,{ calcSize } from 'react-native-numeric-input';
-
 
 const ProductCard = props => {
     console.log('INNNN ProductCard');
@@ -47,7 +43,7 @@ const styles = StyleSheet.create({
         margin: 10
     },
     row: {
-       // flex: 1,
+        flex: 1,
         flexDirection: "row"
     },
     titleContainer: {
@@ -59,6 +55,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'gray'
     },
+
+
     year: {
 
         height: 30,
@@ -66,6 +64,8 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         position: 'absolute',
         right: 100,
+
+
     },
     yearText: {
         fontSize: 20,

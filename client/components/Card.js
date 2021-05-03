@@ -4,8 +4,9 @@ import {StyleSheet, View, Text, ImageBackground, TouchableOpacity} from 'react-n
 const Card = props => {
     return(
         <TouchableOpacity
-            onPress={() => props.navigation.navigate('List', {
-              houseId: props.id
+            onPress={() => props.navigation.navigate('HomeDetails', {
+              houseId: props.id,
+              
             })}
         >
             <View style={styles.card}>
@@ -17,9 +18,7 @@ const Card = props => {
                 <View style={styles.imageContainer}>
                     <ImageBackground source={{ uri: 'https://cdn1.iconfinder.com/data/icons/shopping-and-commerce-2-9/134/197-512.png' }} style={styles.image}>
                         
-                        <View style={styles.year}>
-                            <Text style={styles.yearText}></Text>
-                        </View>
+                       
                     </ImageBackground>
                 </View>
                 <View style={styles.description}>
@@ -65,23 +64,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'flex-end'
       },
-      price: {
-        fontSize: 30,
-        color: '#fff',
-        margin: 10
-      },
-      year: {
-        margin: 10,
-        backgroundColor: '#2652B0',
-        height: 25,
-        width: 80,
-        borderRadius: 5
-      },
-      yearText: {
-        fontSize: 20,
-        color: '#fff',
-        textAlign: 'center'
-      },
+  
       description: {
         margin: 10
       },

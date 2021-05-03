@@ -14,25 +14,27 @@ import FavoriteListsScreen from '../screens/FavoriteListsScreen';
 import SearchListScreen from '../screens/SearchListScreen';
 import AddHomeScreen from '../screens/AddHomeScreen';
 import OldListsScreen from '../screens/OldListsScreen';
-import ListDetailsScreen from '../screens/ListDetailsScreen';
-import SearchProductScreen from '../screens/SearchProductScreen';
+import HomeDetailsScreen from '../screens/HomeDetailsScreen';
+import Top5SuperMarketsScreen from '../screens/Top5SuperMarketsScreen';
+import SearchProductScreen from '../screens/SearchProductScreen'
 import { DrawerContent } from './DrawerContent';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 
 const Stack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-// const HeaderRight = () => {
-//     const navigation = useNavigation();
+const HeaderLeft = () => {
+    const navigation = useNavigation();
 
-//     return (
-//         <MaterialIcons name="menu" size={24} onPress={() => { navigation.openDrawer() }} />
-//     );
-// }
+    return (
+        <MaterialIcons name="menu" size={24} onPress={() => { navigation.openDrawer() }} />
+    );
+}
 
 function DrawerNavigator() {
     return (
-        <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />} >
+        <Drawer.Navigator  drawerContent={props => <DrawerContent {...props} /> } >
             <Drawer.Screen
                 name="Tabs Navigator"
                 component={TabsNavigator}
@@ -43,8 +45,12 @@ function DrawerNavigator() {
 
 function FavoritesNavigator() {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="Favorites" component={FavoriteListsScreen} options={{ headerLeft: null }} />
+        <Stack.Navigator
+            screenOptions={{
+                headerLeft: () => <HeaderLeft />
+            }}
+        >
+            <Stack.Screen name="Favorites" component={FavoriteListsScreen}  />
         </Stack.Navigator>
     );
 }
@@ -59,10 +65,15 @@ function SearchListNavigator() {
 
 function HomeStackNavigator() {
     return (
-        <Stack.Navigator>
+        
+        <Stack.Navigator
+            screenOptions={{
+                headerLeft: () => <HeaderLeft />
+            }}
+        >
             <Stack.Screen name="Home"
                 component={HomeScreen}
-                options={{ headerLeft: null }}
+                
             />
 
             <Stack.Screen name="NewList"
@@ -70,19 +81,23 @@ function HomeStackNavigator() {
 
             />
 
-            <Stack.Screen name="SearchProduct"
-                component={SearchProductScreen}
-
+            <Stack.Screen name="HomeDetails"
+                component={HomeDetailsScreen}
             />
-
-            <Stack.Screen name="List"
-                component={ListDetailsScreen}
+            <Stack.Screen name="Top5"
+                component={Top5SuperMarketsScreen}
             />
-
             <Stack.Screen name="OldLists"
                 component={OldListsScreen}
-                options={{ headerLeft: null }}
+               
             />
+             <Stack.Screen name="SearchProduct"
+                component={SearchProductScreen}
+               
+            />
+
+
+           
 
 
         </Stack.Navigator>
@@ -92,6 +107,7 @@ function HomeStackNavigator() {
 function TabsNavigator() {
     return (
         <Tabs.Navigator
+        
             screenOptions={
                 ({ route }) => ({
                     tabBarIcon: () => {
@@ -100,9 +116,10 @@ function TabsNavigator() {
                             iconName = "home"
                         } else if (route.name == "Favorites") {
                             iconName = "favorite"
-                        } else if (route.name == "Search List") {
-                            iconName = "search"
                         }
+                        // else if (route.name == "Search List") {
+                        //     iconName = "search"
+                        // }
                         return <MaterialIcons name={iconName} size={24} />
                     }
 
@@ -110,7 +127,7 @@ function TabsNavigator() {
         >
             <Tabs.Screen name="Home" component={HomeStackNavigator} />
             <Tabs.Screen name="Favorites" component={FavoritesNavigator} />
-            <Tabs.Screen name="Search List" component={SearchListNavigator} />
+            {/* <Tabs.Screen name="Search List" component={SearchListNavigator} /> */}
         </Tabs.Navigator>
     );
 }
@@ -118,7 +135,7 @@ function TabsNavigator() {
 function AppNavigator() {
     return (
         <NavigationContainer>
-            <Stack.Navigator>
+            <Stack.Navigator >
                 <Stack.Screen
                     name="Login"
                     component={LoginScreen}
