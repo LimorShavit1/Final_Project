@@ -3,8 +3,8 @@ export const CREATE_HOUSES = 'CREATE_HOUSES';
 export const DELETE_LIST = 'DELETE_LIST';
 export const DELETE_ITEM = 'DELETE_ITEM';
 
-const BASE_URL = 'http://192.168.56.1:3000';
-//const BASE_URL = 'https://final2704.herokuapp.com';
+//const BASE_URL = 'http://192.168.56.1:3000'; 
+const BASE_URL = 'https://final2704.herokuapp.com';
 
 export const fetchHouses = (CustumerID) => {
     return async dispatch => {
