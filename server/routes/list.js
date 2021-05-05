@@ -27,7 +27,7 @@ router.post('/findItemByName', validateProduct, async (req, res) => {
 
     } else {
         //extract product name from req.body
-        const productName = req.body.productName;
+        const productName = req.body.productName.trim();
         //console.log(productName);
 
         //http call to get all products info'

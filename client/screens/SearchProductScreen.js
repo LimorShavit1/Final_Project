@@ -61,6 +61,7 @@ const SearchProductScreen = props => {
                             //onSubmit : when this form is submited we can have access to the "values"
                             onSubmit={(values) => {
                                 //sent req to backend
+                                values.productName = values.productName.trim();
                                 console.log(values);
                                 setProduct(values.productName);
 
@@ -71,6 +72,8 @@ const SearchProductScreen = props => {
                                             try {
                                                 //Pdata --> from backend
 
+                                                //reset products_list
+                                                products_list = [];
                                                 products_list.push(JSON.parse(result.Pdata));
                                                 setProductsList([...products_list]);
                                                 setFetchingProductsSucced(true);
