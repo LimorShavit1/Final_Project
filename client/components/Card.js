@@ -12,7 +12,7 @@ const Card = props => {
             <View style={styles.card}>
                 <View style={styles.titleContainer}>
                     <Text style={styles.title}>
-                      {props.ListName.length > 30 ? props.title.slice(0, 30) + '...' : props.ListName}
+                      {props.ListName.length > 30 ? props.ListName.slice(0, 30) + '...' : props.ListName}
                     </Text>
                 </View>
                 <View style={styles.imageContainer}>

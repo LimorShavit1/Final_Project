@@ -5,9 +5,7 @@ import { useApi } from '../hooks/api.hook';
 const OldList = ({userID,removeFav, addFav, isLiked, ...props }) => {
   
     return (
-        <TouchableOpacity   onPress={() => props.navigation.navigate('HistoryListDitails', {
-            items: props.item.items
-          })}>
+        <TouchableOpacity>
             <View style={styles.listItem}>
                 <Image
                     source={{ uri: 'https://cdn1.iconfinder.com/data/icons/business-startup-48/64/1076-512.png' }}

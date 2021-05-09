@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, FlatList, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup'; // for validation
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +7,8 @@ import { Icon } from 'react-native-elements'
 import { Feather } from '@expo/vector-icons';
 import ProductCard from '../components/ProductCard';
 import * as listAction from '../redux/actions/listAction';
+import { useApi } from '../hooks/api.hook';
+import HomeDetailsScreen from '../screens/HomeDetailsScreen'
 
 
 
@@ -17,6 +19,7 @@ const formSchema = yup.object({
 
 const SearchProductScreen = props => {
 
+    const api = useApi();
 
     let textInput = '';
     const { listId } = props.route.params;
@@ -24,7 +27,7 @@ const SearchProductScreen = props => {
 
     const dispatch = useDispatch();
     var products_list = [];
-    //const DATA = [{ s: 1 }, { s: 2 }, { s: 3 }];
+
     const [FetchingProductsSucced, setFetchingProductsSucced] = useState(false);
     const [ListId, setListId] = useState(listId);
     const [Product, setProduct] = useState('');
@@ -34,6 +37,17 @@ const SearchProductScreen = props => {
 
     }, [FetchingProductsSucced,Product]);
 
+    const _addItem = async (product_name,product_unit_name,manufacturer_id,product_barcode,product_description,quantity,manufacturer_name) => {
+        try{
+            const product= await api.addProduct(listId,product_name,product_unit_name,manufacturer_id,product_barcode,product_description,quantity,manufacturer_name);
+           
+            Alert.alert('Created Successfully');
+        } catch (e){
+            Alert.alert('An error occurred. Try Again', [{text: 'OK'}]);
+        }
+        
+       
+    }
 
     //render ProductCard component
     if (FetchingProductsSucced) {
@@ -142,6 +156,7 @@ const SearchProductScreen = props => {
                                     product_description={item.product_description}
                                     manufacturer_name={item.manufacturer_name}
                                     product_image={item.product_image}
+                                    addItem={_addItem}
                                     quantity={'1'}
                                     list_id={ListId}
                                 />

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator,FlatList, TextInput, KeyboardAvoidingView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, FlatList, TextInput, KeyboardAvoidingView, TouchableOpacity, Image } from 'react-native';
 import OldList from '../components/OldList';
 import { useApi } from '../hooks/api.hook';
-;
+
 
 
 const OldListsScreen = props => {
@@ -12,6 +12,7 @@ const OldListsScreen = props => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [oldList, setoldList] = useState([]);
+    const [favorites, setFavorites] = useState([]);
 
 
 
@@ -19,14 +20,26 @@ const OldListsScreen = props => {
         const init = async () => {
             setIsLoading(true);
             try {
-                const oldData = await api.getMyHistory(userID);
+                const [oldData, favoritesList] = await Promise.all([api.getMyHistory(userID), api.getUserFavorites(userID)]);
                 setoldList(oldData);
+                setFavorites(favoritesList);
+
             } finally {
                 setIsLoading(false);
             }
         }
         init();
     }, [])
+
+    const _addFav = async (HistoryId) => {
+
+        await api.addFav(userID, HistoryId);
+        setFavorites(prev => [...prev, HistoryId]);
+    }
+    const _removeFav = async (HistoryId) => {
+        await api.removeFav(userID, HistoryId);
+        setFavorites( prev => prev.filter(favoriteId => favoriteId !== HistoryId));
+    }
 
 
     if (isLoading) {
@@ -50,25 +63,31 @@ const OldListsScreen = props => {
     }
 
     return (
+
         <View style={styles.container}>
-    
 
-      <FlatList
-        data={oldList}
 
-        keyExtractor={item => item._id}
+            <FlatList
+                data={oldList}
 
-        renderItem={({ item }) => (
-          <OldList
-            
-            navigation={props.navigation}
-            item={item}
-          
+                keyExtractor={item => item._id}
 
-          />
-        )}
-      />
-    </View>
+                renderItem={({ item }) => (
+                    <OldList
+
+                        navigation={props.navigation}
+                        item={item}
+                        isLiked={favorites.includes(item._id)}
+                        addFav={_addFav}
+                        removeFav={_removeFav}
+                        userID={userID}
+                        
+
+
+                    />
+                )}
+            />
+        </View>
 
     );
 }

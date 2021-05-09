@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View,Button} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import MapView, { Circle } from 'react-native-maps';
 import Supermarkets from '../components/Supermarkets';
@@ -10,17 +10,27 @@ import { useApi } from '../hooks/api.hook';
 
 
 const Top5SuperMarketsScreen = props => {
-    const { location_latitude, location_longitude, listid } = props.route.params;
+    const { location_latitude, location_longitude, listid, radius } = props.route.params;
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const api = useApi();
+    const chosen = [];
+    console.log(radius);
 
 
 
     useEffect(() => {
-        api.getSupermarkets(location_latitude, location_longitude).then(result => setData(result)).catch(e => console.warn(e));
+        api.getSupermarkets(location_latitude, location_longitude, radius).then(result => setData(result)).catch(e => console.warn(e));
     }, []);
 
+    const _chosen = (SuperMarket) => {
+        chosen.push(SuperMarket);
+        console.log(chosen);
+    }
+    const _unchosen = (SuperMarket) => {
+        chosen.pop(SuperMarket);
+        console.log(chosen);
+    }
 
     var coord = [];
 
@@ -32,6 +42,8 @@ const Top5SuperMarketsScreen = props => {
                     latitude: data[i].coordinate.latitude,
                     longitude: data[i].coordinate.longitude
                 }}
+
+                title={data[i].placeName}
             />
         )
     }
@@ -61,30 +73,32 @@ const Top5SuperMarketsScreen = props => {
                         latitude: location_latitude,
                         longitude: location_longitude
                     }}
-                    radius={1500}
+                    radius={parseFloat(radius)}
                     fillColor={'rgba(200,300,200,0.5)'}
                 />
                 {coord}
 
 
             </MapView>
-          
+
             <FlatList
-                    data={data}
-                    style={{flex: 1}}
-                    keyExtractor={item => item._id}
-                    renderItem={({ item }) => (
-                        <Supermarkets
-                            navigation={props.navigation}
-                            placeName={item.placeName}
-                            placeId={item.placeId}
-                            uri={item.uri}
-                            isOpen={item.isOpen}
-                            placeAddress={item.placeAddress}
-                            id={item._id}
-                        />
-                    )}
-                />
+                data={data}
+                style={{ flex: 1 }}
+                keyExtractor={item => item.placeId}
+                renderItem={({ item }) => (
+                    <Supermarkets
+                        navigation={props.navigation}
+                        isOpen={item.isOpen}
+                        item={item}
+                        chosen={_chosen}
+                        unchosen={_unchosen}
+                    />
+                )}
+            />
+            <Button title="לעבור לחישוב" color="#66CDAA"  onPress={() => console.log(chosen)}/>
+
+          
+
         </View>
 
 
@@ -112,6 +126,4 @@ const styles = StyleSheet.create({
     },
 });
 export default Top5SuperMarketsScreen;
-
-
 

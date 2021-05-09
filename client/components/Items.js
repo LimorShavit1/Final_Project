@@ -19,7 +19,7 @@ const Card = ({onQuantityChange,...props}) => {
               
                 <View style={styles.description}>
                     <Text style={styles.title}>
-                      {props.item.product_name.length > 30 ? props.title.slice(0, 30) + '...' : props.item.product_name}
+                      {props.item.product_name.length > 30 ? props.item.product_name.slice(0, 30) + '...' : props.item.product_name}
                     </Text>
                     <Text>{props.item.manufacturer_name}</Text>
                 </View>

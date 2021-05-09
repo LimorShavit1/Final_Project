@@ -53,10 +53,10 @@ const HomeScreen = props => {
         );
     }
 
-    if (houses.length == 0 && !isLoading) {
+    if (houses.length === 0) {
         return (
             <View style={styles.centered}>
-                <Text style={styles.welcomUserText}>{`Welcome ${user.fullName}`}</Text>
+                <Text style={styles.welcomUserText}>Welcome {user.fullName}</Text>
                 <Text style={styles.centered}>No lists found. You could add one!</Text>
 
                 <FloatingAction
@@ -152,7 +152,7 @@ const HomeScreen = props => {
             />
 
 
-            <Text style={styles.welcomUserText}>Welcome {user?.fullName}</Text>
+            <Text style={styles.welcomUserText}>{`Welcome ${user.fullName}`}</Text>
 
             <SwipeListView
                 data={search? houses.filter(h => h.ListName.includes(search)) : houses}
@@ -199,7 +199,8 @@ const styles = StyleSheet.create({
     },
     welcomUserText: {
         textAlign: 'center',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+       width: '100%'
     },
     rowFront: {
         backgroundColor: '#FFF',
