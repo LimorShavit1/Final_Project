@@ -88,7 +88,7 @@ router.post('/Login', loginValidation, async (req, res) => {
 
     // validate data against validation rules in "loginValidation"
     const errors = validationResult(req);
-    //begor checking in DB we check if we got any user fro login form
+    //before checking in DB we check if we got any user from login form
     if (!errors.isEmpty()) { //if we have an error
         return res.status(400).json({ errors: errors.array() });
 

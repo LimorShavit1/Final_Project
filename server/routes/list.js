@@ -7,12 +7,20 @@ const fs = require('fs');
 
 require('dotenv').config();
 
+const User = require('../models/User');
+const Request = require('../models/Request');
+const House = require('../models/House');
+
+
 //define validation for product inputs
-const validateProduct = [
+const validateInput = [
     check('productName').isLength({ min: 2 }).withMessage('Product name inValid. Must contain atleast 2 characters'),
+    //email is to add another user to list
+    check('email').isEmail().withMessage('Please provide a valid email'),
 ]
 
-router.post('/findItemByName', validateProduct, async (req, res) => {
+// route -> /api/list/findItemByName
+router.post('/findItemByName', validateInput, async (req, res) => {
 
     // validate data against validation rules in "validateProduct"
     const errors = validationResult(req);
@@ -23,10 +31,10 @@ router.post('/findItemByName', validateProduct, async (req, res) => {
     } else {
         //extract product name from req.body
         const productName = req.body.productName;
-        
+
         //http call to get all products info'
-        const result = await axios.post('https://api.superget.co.il/', 
-        `action=GetProductsByName&product_name[]=${productName}&limit=30&api_key=ca450409788fb68cd7ecd1e5947afd0d48571d86`,
+        const result = await axios.post('https://api.superget.co.il/',
+            `action=GetProductsByName&product_name[]=${productName}&limit=30&api_key=ca450409788fb68cd7ecd1e5947afd0d48571d86`,
             {
                 headers: {
                     "Content-type": "application/x-www-form-urlencoded",
@@ -38,7 +46,7 @@ router.post('/findItemByName', validateProduct, async (req, res) => {
                     if (err) return console.log(err);
                     console.log('Data in file!');
 
-                }); 
+                });
                 console.log('data', productData.data);
                 const Pdata = JSON.stringify(productData.data);
                 if (!Pdata) return res.status(404).send({ success: false, message: 'No Data' });
@@ -50,6 +58,101 @@ router.post('/findItemByName', validateProduct, async (req, res) => {
                 console.log('error', err)
             })
     }
+});
+
+// route -> /api/list/addUserToList
+router.post('/addUserToList', async (req, res) => {
+    //get the users email we want to add, get the personId that added and listID to add the new user
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) { //if we have an input error
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    //check if email exist in system
+    const user = await User.findOne({ email: req.body.email.toLowerCase() })
+    if (!user) {
+        //check if user we want to add to list exist in system 
+        return res.status(400).send({ success: false, message: 'User Is Not Exist In System' });
+    }
+
+    //check if user we want to add has already requests array in DB
+    const requestUser = await Request.findOne({ CustumerID: user._id });
+    if (!requestUser) {
+        //create new request 
+        const request = new Request({
+            CustumerID: user._id,
+            Requests: req.body.Requests,
+        });
+
+        //store new request in DB
+        request.save()
+            .then(result => {
+                res.send({
+                    success: true,
+                    message: 'Request created successfully',
+                    data: result
+                })
+            })
+            .catch(err => console.log(err))
+
+        // return .....
+    }
+    else {
+
+        // ///test !! : {senderId : String, senderName : String, listId : String, ListName : String}
+        // console.log("in");
+        // console.log("sender: " + req.body.Requests.senderId);
+        // console.log("listId: " + req.body.Requests.listId);
+
+
+        //add the request to exist user in DB.
+        // First we will check end cases -->
+        // if a user wants to associate the same user to the same list multiple times
+
+        const Is_request_exist = await Request
+            .findOne({
+                CustumerID: user._id,
+                Requests: {
+                    $elemMatch: {
+                        senderId: req.body.Requests.senderId, senderName: req.body.Requests.senderName,
+                        listId: req.body.Requests.listId, ListName: req.body.Requests.ListName
+                    }
+                }
+            });
+
+
+        if (Is_request_exist) {
+            return res.status(400).send({ success: false, message: 'You have already send this request' });
+        }
+
+        //add request to DB:
+        Request.findOne({ CustumerID: user._id })
+            .then(request => {
+                request.Requests.push(req.body.Requests)
+                return request.save();
+            })
+            .then(result => {
+                res.send(result);
+            })
+            .catch(err => console.log(err));
+    }
+});
+
+
+
+
+// route -> /api/list/pullAllRequests
+router.get('/pullAllRequests/:id', (req, res) => {
+    //get from Db all requests
+    const CustumerId = req.params.id;
+    Request.find({ CustumerID: CustumerId })
+        .then(requests => {
+            console.log(requests);
+            res.send(requests)
+        })
+        .catch(err => console.log(err))
 });
 
 module.exports = router;
