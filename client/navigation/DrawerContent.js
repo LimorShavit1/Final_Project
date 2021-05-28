@@ -58,7 +58,7 @@ export function DrawerContent(props) {
                             />
                             <View>
                                 <View style={{ marginLeft: 15, flexDirection: 'column' }}>
-                                <Title style={styles.title}>{user.fullName}</Title>
+                                    <Title style={styles.title}>{user.fullName}</Title>
 
                                     <Caption style={styles.caption}>{user.email}</Caption>
                                 </View>
@@ -77,24 +77,39 @@ export function DrawerContent(props) {
                             label='היסטוריית הרכישות'
                             onPress={() => props.navigation.navigate('OldLists', {
                                 userID: user._id,
-                                
-                              })}
+
+                            })}
                         />
 
+                    </Drawer.Section>
+
+                    <Drawer.Section style={styles.bottomDrawerSection}>
+                        <DrawerItem
+                            icon={({ color, size }) => (
+                                <AntDesign name="addfile"
+                                    size={size}
+                                    color={color} />
+                            )}
+                            label='בקשות שיוך לרשימה'
+                            onPress={() => props.navigation.navigate('Requests', {
+                                userID: user._id,
+
+                            })}
+                        />
                     </Drawer.Section>
                 </View>
             </DrawerContentScrollView>
 
             <Drawer.Section style={styles.bottomDrawerSection}>
-            <DrawerItem
-                            icon={({ color, size }) => (
-                                <AntDesign name="logout"
-                                    size={size}
-                                    color={color} />
-                            )}
-                            label='התנתק'
-                            onPress={() => logOut(props)}
-                        />
+                <DrawerItem
+                    icon={({ color, size }) => (
+                        <AntDesign name="logout"
+                            size={size}
+                            color={color} />
+                    )}
+                    label='התנתק'
+                    onPress={() => logOut(props)}
+                />
             </Drawer.Section>
 
 

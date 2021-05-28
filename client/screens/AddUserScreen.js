@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, Image, Alert } from 'react-native';
 import { Formik } from 'formik';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup'; // for validation
 import AsyncStorage from '@react-native-community/async-storage';
+import * as listAction from '../redux/actions/listAction';
 
-import * as authAction from '../redux/actions/authAction';
 
-//schema for the validation
 const formSchema = yup.object({
-    email: yup.string().email().required(), // check that the data is valid email & this is requierd field to login
-    password: yup.string().required().min(6)
+    // check that the email is valid & this is requierd field to add user to current list
+    email: yup.string().email().required(),
 })
 
-const ForgotPasswordScreen = navData => {
+const AddUserScreen = props => {
+
+    const user = useSelector(state => state.auth.user);
+    const { listId, listName } = props.route.params;
+
+    // const {listId} = props ;
+    console.log("9999");
+    console.log("senderId==" + user._id);
+    // console.log("senderName=="+senderName);
+    //console.log("listId==" + c);
+    console.log("9999");
+
 
     const dispatch = useDispatch();
-
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? "padding" : "height"}
@@ -25,25 +34,28 @@ const ForgotPasswordScreen = navData => {
             <View style={styles.container}>
                 <Formik
                     initialValues={{
-                        //setup the values for each input in the form
-                        email: "",
-                        password: ""
+                        //setup the values for email input in the form
+                        email: "", // user's email we want to add
+                        Requests: { senderId: user._id, senderName: user.fullName, listId: listId, ListName: listName }
                     }}
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
-                        
+
                         values.email = values.email.toLowerCase();
 
-                        dispatch(authAction.setUserPassword(values))
+                        dispatch(listAction.sendMyRequest(values))
                             .then(async result => { //get the result from authActionjs: line 70
-                                //the result contain the token
-                                console.log(result);
+                                console.log(result.success);
+
                                 if (result.success) {
                                     try {
-                                        await AsyncStorage.setItem('token', result.token)
+                                        console.log("limor");
+                                        Alert.alert(result.message);
+
                                         //navigate to HomeScreen after success in login request
-                                        navData.navigation.navigate('Login');
+                                        props.navigation.navigate('Home');
+
                                     } catch (err) {
                                         console.log(err);
                                     }
@@ -54,18 +66,21 @@ const ForgotPasswordScreen = navData => {
                             })
                             .catch(err => console.log(err));
 
+
                     }}
                 >
                     {(props) => (
                         //props pass by formik
                         //function that returns automatically
-                        <View>
-                            <Text style={styles.setText}>Set Your Password</Text>
+                        <View style={styles.container}>
+                            <Image source={require('../assets/images/Add_User1.jpg')} style={styles.image} />
 
-                            <View>
+                            <Text style={styles.setText}>הוסף משתמש לרשימה על ידי הזנת אימייל</Text>
+
+                            <View >
 
                                 <TextInput style={styles.input}
-                                    placeholder="Email"
+                                    placeholder="example@example.com"
                                     placeholderTextColor="#fff"
                                     keyboardType="email-address"
                                     onChangeText={props.handleChange('email')}
@@ -75,21 +90,11 @@ const ForgotPasswordScreen = navData => {
 
                                 <Text>{props.touched.email && props.errors.email}</Text>
 
-                                <TextInput style={styles.input}
-                                    placeholder="Password"
-                                    placeholderTextColor="#fff"
-                                    secureTextEntry={true}
-                                    onChangeText={props.handleChange('password')}
-                                    value={props.values.password}
-                                    onBlur={props.handleBlur('password')}
-                                />
-                                <Text>{props.touched.password && props.errors.password}</Text>
-
                                 <TouchableOpacity
                                     style={styles.button}
                                     onPress={props.handleSubmit}
                                 >
-                                    <Text style={styles.buttonText}>Submit</Text>
+                                    <Text style={styles.buttonText}>הוסף איש קשר</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -99,7 +104,6 @@ const ForgotPasswordScreen = navData => {
             </View>
         </KeyboardAvoidingView>
     );
-
 }
 
 const styles = StyleSheet.create({
@@ -115,14 +119,14 @@ const styles = StyleSheet.create({
         color: "#738289",
         fontSize: 16,
         fontWeight: "bold",
-        marginLeft: 60
+        marginTop: 20
     },
     logo: {
         alignItems: 'center',
         marginBottom: 40
     },
     image: {
-        marginTop: 90,
+        marginTop: -70,
         width: 130,
         height: 130
     },
@@ -141,7 +145,8 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginVertical: 10,
         paddingVertical: 13,
-        marginLeft: 50
+        marginTop: 30,
+        marginLeft: 50,
     },
     buttonText: {
         fontSize: 16,
@@ -150,5 +155,4 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     }
 })
-
-export default ForgotPasswordScreen;
+export default AddUserScreen;

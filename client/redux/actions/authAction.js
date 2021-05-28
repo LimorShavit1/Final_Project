@@ -63,7 +63,7 @@ export const loginUser = (authData) => {
 
         //result data contain the object : {message,success}
         const resultData = await result.json();
-        console.log(resultData);
+        //console.log(resultData);
 
         if (resultData.success) {
             dispatch({

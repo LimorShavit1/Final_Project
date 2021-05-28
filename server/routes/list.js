@@ -62,6 +62,7 @@ router.post('/findItemByName', validateInput, async (req, res) => {
 
 // route -> /api/list/addUserToList
 router.post('/addUserToList', async (req, res) => {
+
     //get the users email we want to add, get the personId that added and listID to add the new user
 
     const errors = validationResult(req);
@@ -77,15 +78,28 @@ router.post('/addUserToList', async (req, res) => {
         return res.status(400).send({ success: false, message: 'User Is Not Exist In System' });
     }
 
+    //check input --> if user is trying to add his own email, get error message
+    // curr_user == the sender
+    const curr_user = await User.findOne({ _id: req.body.Requests.senderId });
+    if (user.email == curr_user.email) {
+        return res.status(400).send({ success: false, message: "Oops! You are trying to add yourself." });
+    }
+
+    //check if user we want to add already has this list
+    const existInList = await House.findOne({ _id: req.body.Requests.listId , CustumerID: user._id})
+    if(existInList){
+        return res.status(400).send({ success: false, message: "Oops! You are trying to add an existing user." });
+    }
+
     //check if user we want to add has already requests array in DB
     const requestUser = await Request.findOne({ CustumerID: user._id });
     if (!requestUser) {
         //create new request 
         const request = new Request({
             CustumerID: user._id,
-            Requests: req.body.Requests,
+            Requests: req.body.Requests
         });
-
+        //console.log(request);
         //store new request in DB
         request.save()
             .then(result => {
@@ -117,14 +131,14 @@ router.post('/addUserToList', async (req, res) => {
                 Requests: {
                     $elemMatch: {
                         senderId: req.body.Requests.senderId, senderName: req.body.Requests.senderName,
-                        listId: req.body.Requests.listId, ListName: req.body.Requests.ListName
+                        listId: req.body.Requests.listId, listName: req.body.Requests.listName
                     }
                 }
             });
 
 
         if (Is_request_exist) {
-            return res.status(400).send({ success: false, message: 'You have already send this request' });
+            return res.status(400).send({ success: false, message: 'You have already sent this request' });
         }
 
         //add request to DB:
@@ -134,7 +148,12 @@ router.post('/addUserToList', async (req, res) => {
                 return request.save();
             })
             .then(result => {
-                res.send(result);
+                //res.send(result);
+                res.send({
+                    success: true,
+                    message: 'Request created successfully',
+                    data: result
+                })
             })
             .catch(err => console.log(err));
     }
@@ -145,14 +164,50 @@ router.post('/addUserToList', async (req, res) => {
 
 // route -> /api/list/pullAllRequests
 router.get('/pullAllRequests/:id', (req, res) => {
-    //get from Db all requests
+    //Get from DB all requests
     const CustumerId = req.params.id;
     Request.find({ CustumerID: CustumerId })
         .then(requests => {
-            console.log(requests);
-            res.send(requests)
+            //console.log(requests);
+            res.send({ success: true, message: 'Fetch Data Succesfuly', requests })
         })
         .catch(err => console.log(err))
 });
+
+
+
+// route -> /api/list/UserRefuseJoinToList
+// User dont want to be part of list
+router.post('/UserRefuseJoinToList', async (req, res) => {
+    const { custumerId, requestId } = req.body;
+    //delete request from Requests array
+    await Request.updateOne({ CustumerID: custumerId }, { "$pull": { "Requests": { "_id": requestId } } })
+    res.send({ success: true, message: 'The Request Was Successfully Rejected' })
+
+});
+
+
+// route -> /api/list/UserAcceptJoinToList
+router.post('/UserAcceptJoinToList', async (req, res) => {
+    const { listId, custumerId, requestId } = req.body;
+
+    // Delete the request from 'Request array'
+    await Request.updateOne({ CustumerID: custumerId }, { "$pull": { "Requests": { "_id": requestId } } })
+
+    //Add user to wanted list
+    House.findById(listId)
+        .then(houses => {
+            houses.CustumerID.push(custumerId)
+            return houses.save();
+        })
+        .then(result => {
+            //res.send(result);
+            res.send({ success: true, message: 'The Request Was Successfully Accepted', result });
+        })
+        .catch(err => console.log(err));
+
+});
+
+
 
 module.exports = router;

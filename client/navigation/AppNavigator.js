@@ -17,6 +17,8 @@ import HomeDetailsScreen from '../screens/HomeDetailsScreen';
 import Top5SuperMarketsScreen from '../screens/Top5SuperMarketsScreen';
 import SearchProductScreen from '../screens/SearchProductScreen';
 import HistoryListDitails from '../screens/HistoryListDitails';
+import AddUserScreen from '../screens/AddUserScreen';
+import RequestsScreen from '../screens/RequestsScreen';
 import { DrawerContent } from './DrawerContent';
 import { Header } from 'react-native/Libraries/NewAppScreen';
 
@@ -34,7 +36,7 @@ const HeaderLeft = () => {
 
 function DrawerNavigator() {
     return (
-        <Drawer.Navigator  drawerContent={props => <DrawerContent {...props} /> } >
+        <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />} >
             <Drawer.Screen
                 name="Tabs Navigator"
                 component={TabsNavigator}
@@ -50,7 +52,7 @@ function FavoritesNavigator() {
                 headerLeft: () => <HeaderLeft />
             }}
         >
-            <Stack.Screen name="Favorites" component={FavoriteListsScreen}  />
+            <Stack.Screen name="Favorites" component={FavoriteListsScreen} />
         </Stack.Navigator>
     );
 }
@@ -65,7 +67,7 @@ function SearchListNavigator() {
 
 function HomeStackNavigator() {
     return (
-        
+
         <Stack.Navigator
             screenOptions={{
                 headerLeft: () => <HeaderLeft />
@@ -73,34 +75,49 @@ function HomeStackNavigator() {
         >
             <Stack.Screen name="Home"
                 component={HomeScreen}
-                
-            />
-           
-            <Stack.Screen name="HistoryListDitails"
-                component={ HistoryListDitails}
 
             />
+
+            <Stack.Screen name="HistoryListDitails"
+                component={HistoryListDitails}
+
+            />
+
             <Stack.Screen name="NewList"
                 component={AddHomeScreen}
 
             />
+
             <Stack.Screen name="HomeDetails"
                 component={HomeDetailsScreen}
             />
+
             <Stack.Screen name="Top5"
                 component={Top5SuperMarketsScreen}
             />
+
             <Stack.Screen name="OldLists"
                 component={OldListsScreen}
-               
+
             />
-             <Stack.Screen name="SearchProduct"
+
+            <Stack.Screen name="SearchProduct"
                 component={SearchProductScreen}
-               
+
+            />
+
+            <Stack.Screen name="AddUserToList"
+                component={AddUserScreen}
+
+            />
+
+            <Stack.Screen name="Requests"
+                component={RequestsScreen}
+
             />
 
 
-           
+
 
 
         </Stack.Navigator>
@@ -110,7 +127,7 @@ function HomeStackNavigator() {
 function TabsNavigator() {
     return (
         <Tabs.Navigator
-        
+
             screenOptions={
                 ({ route }) => ({
                     tabBarIcon: () => {

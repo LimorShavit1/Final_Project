@@ -12,9 +12,11 @@ import { SearchBar } from 'react-native-elements';
 
 import Card from '../components/Card';
 import * as houseAction from '../redux/actions/houseAction';
+import AddUserScreen from './AddUserScreen';
 
 const HomeScreen = props => {
-    const user = useSelector(state => state.auth.user)
+    const user = useSelector(state => state.auth.user);
+    //console.log("print user row 19--> " + user.fullName + " " + user._id);
     const [search, setSearch] = useState('');
 
 
@@ -34,16 +36,18 @@ const HomeScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
 
     const { houses } = useSelector(state => state.house);
+    const { requests } = useSelector(state => state.list);
 
 
     useEffect(() => {
-
 
         setIsLoading(true);
         dispatch(houseAction.fetchHouses(user._id))
             .then(() => setIsLoading(false))
             .catch(() => setIsLoading(false));
-    }, [dispatch]);
+    }, [dispatch,requests]);
+
+    
 
     if (isLoading) {
         return (
@@ -91,6 +95,14 @@ const HomeScreen = props => {
 
     }
 
+    const AddUserToCurrList = (rowMap, rowKey) => {
+        const listName = houses.find(item =>
+            item._id == rowKey
+        );
+
+        props.navigation.navigate('AddUserToList', { listId: rowKey, listName: listName.ListName })
+    }
+
     const HiddenItemWithAction = props => {
         const { onClose, onDelete, onShare } = props;
 
@@ -120,18 +132,16 @@ const HomeScreen = props => {
 
                 data={data}
                 rowMap={rowMap}
-
+                //data.item._id === listID
                 onClose={() => closeRow(rowMap, data.item._id)} //close the swipe row
                 onDelete={() => deleteRow(rowMap, data.item._id)} //delete item from data base
-                onShare={() => console.warn('TODO')} //share the list
+                onShare={() => AddUserToCurrList(rowMap, data.item._id)} //share the list
             />
+
         );
 
     };
     return (
-
-
-
         <View style={styles.container}>
 
             <SearchBar
@@ -155,7 +165,7 @@ const HomeScreen = props => {
             <Text style={styles.welcomUserText}>{`Welcome ${user.fullName}`}</Text>
 
             <SwipeListView
-                data={search? houses.filter(h => h.ListName.includes(search)) : houses}
+                data={search ? houses.filter(h => h.ListName.includes(search)) : houses}
 
                 keyExtractor={item => item._id}
 
@@ -200,7 +210,7 @@ const styles = StyleSheet.create({
     welcomUserText: {
         textAlign: 'center',
         fontWeight: 'bold',
-       width: '100%'
+        width: '100%'
     },
     rowFront: {
         backgroundColor: '#FFF',

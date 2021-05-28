@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 export function useApi() {
 
     const httpClient = useMemo(() => axios.create({
-        baseURL: 'http://192.168.1.23:3000/api'
+        baseURL: 'http://192.168.56.1:3000/api'
     }), [])
 
     const login = async () => await httpClient.get('/whatever')
@@ -22,6 +22,7 @@ export function useApi() {
                                                     manufacturer_id:manufacturer_id,product_barcode:product_barcode,product_description:product_description,quantity,manufacturer_name}}))
     
     const removeFav =async (userID,HistoryId)=>(await httpClient.delete(`/favorite/delete/${userID}/${HistoryId}`))
-    return { login, getHouseDetails, deleteProduct, updateQuantity, getSupermarkets,getMyHistory,getUserFavorites,addFav,removeFav,addProduct};
+    const getMyRequests = async (userID)=>(await httpClient.get(`/list/pullAllRequests/${userID}`)).data
+    return { login, getHouseDetails, deleteProduct, updateQuantity, getSupermarkets,getMyHistory,getUserFavorites,addFav,removeFav,addProduct,getMyRequests};
 
 }
