@@ -51,7 +51,6 @@ const SearchProductScreen = props => {
 
     const onSubmit = (values) => {
         //sent req to backend
-        console.log("limor");
         values.productName = values.productName.trim();
         setProduct(values.productName);
 

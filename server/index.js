@@ -19,8 +19,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         //connect web:
-
-
+        
         const port = process.env.PORT || 3000; // if we dont have port in env file use port=3000
         app.listen(port, () => {
             console.log(`App listening at http://localhost:${port}`);
@@ -38,17 +37,23 @@ app.get('/', (req, res) => {
 });
 
 // cant access this route without being authenticated
-app.get('/api/user/profile', verifyToken, (req, res) => {
+app.get('/api/user/profile', verifyToken , (req, res) => {
     console.log(req.user);
-    res.send({ success: true, data: req.user });
+    res.send({success: true , data: req.user});
 });
 
 //middleware:
 app.use('/api/users', authRoutes);
-app.use('/api/houses', houses);
-app.use('/api/maps', maps);
+app.use('/api/houses',houses);
+app.use('/api/maps',maps);
 app.use('/api/list', listItem);
-app.use('/api/OldList', OldList);
+app.use('/api/OldList',OldList);
 app.use('/api/favorite', Favorite);
+
+// DB_USERNAME ='limorsh'
+// DB_PASSWORD='limorsagi123'
+//mongoose.connect('mongodb+srv://limorsh:limorsagi123@cluster0.ymfp4.mongodb.net/auth_system?retryWrites=true&w=majority',
+//require('dotenv').config();
+//mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ymfp4.mongodb.net/auth_system?retryWrites=true&w=majority`,
 
 

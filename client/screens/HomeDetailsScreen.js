@@ -24,234 +24,235 @@ const HomeDetailsScreen = props => {
   // This is to manage TextInput State
   const [inputValue, setInputValue] = useState("");
   const [refreshing, setRefreshing] = React.useState(false);
-  //manage reload 
 
+  //manage reload 
   const onRefresh = async () => {
     setRefreshing(true);
     const houseData = await api.getHouseDetails(houseId);
-    setProducts(houseData.items);
+
+    setProducts([...houseData.items]);
+  // console.log(products);
     setRefreshing(false);
-  };
-  // Create toggleModalVisibility function that will
-  // Open and close modal upon button clicks.
+};
+const dispatch = useDispatch();
+const [isLoading, setIsLoading] = useState(false);
+const [products, setProducts] = useState([]);
 
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false);
-  const [products, setProducts] = useState([]);
-
-
-
-  useEffect(() => {
-    const init = async () => {
-      setIsLoading(true);
-      try {
-        const houseData = await api.getHouseDetails(houseId);
-        setProducts(houseData.items);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    const unsubscribe = props.navigation.addListener('focus', init);
-
-    return unsubscribe;
-  }, [])
-
-  if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (products.length == 0 && !isLoading) {
-    return (
-      <SafeAreaView style={styles.centered}>
-
-        <Text style={styles.centered}>No Items found. You could add one!</Text>
-
-        <FloatingAction  contentContainerStyle={styles.scrollView}
-
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-            />}
-          position="left"
-          animated={false}
-          showBackground={false}
-          onPressMain={() => props.navigation.navigate('SearchProduct', { listId: houseId })}
-
-        />
-      </SafeAreaView>
-
-    );
-  }
-  const toggleModalVisibility = () => {
-
-    setModalVisible(!isModalVisible);
-  };
-
-  const _updateDBQuantity = async () => {
-    for (let i = 0; i < products.length; i++) {
-      await api.updateQuantity(houseId, products[i]._id, products[i].quantity);
-
-    }
-  }
-  const _combined = () => {
+useEffect(() => {
+  const init = async () => {
     setIsLoading(true);
-    toggleModalVisibility();
-    _getLocation();
-
-  }
-
-  const _getLocation = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== 'granted') {
-      console.log('PERMISSION NOT GRANTED!');
-    }
-
-    const location = await Location.getCurrentPositionAsync();
-    setIsLoading(false);
-    props.navigation.navigate('Top5', {
-      location_latitude: location.coords.latitude, location_longitude: location.coords.longitude, listid: houseId, radius: inputValue ? inputValue : "1500",products:products
-    })
-  }
-
-  const closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      rowMap[rowKey].closeRow();
+    try {
+      const houseData = await api.getHouseDetails(houseId);
+      setProducts(houseData.items);
+      console.log(products);
+    } finally {
+      setIsLoading(false);
     }
   }
+  const unsubscribe = props.navigation.addListener('focus', init);
 
+  return unsubscribe;
+}, [])
 
-
-  const deleteRow = async (rowMap, productId) => {
-
-
-    setProducts(prevProducts => prevProducts.filter(x => x._id !== productId))
-
-    await api.deleteProduct(houseId, productId);
-  }
-
-  const changeProductQuantity = (productId, newquantity) => {
-
-    setProducts(prevProducts => {
-      prevProducts.find(p => p._id === productId).quantity = newquantity;
-
-      return [...prevProducts];
-    })
-  }
-
-  const HiddenItemWithAction = props => {
-    const { onClose, onDelete } = props;
-
-    return (
-      <View style={styles.rowBack}>
-
-
-        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={onClose}>
-          <MaterialCommunityIcons name="close-circle-outline" size={25} color='#fff' />
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={onDelete}>
-          <MaterialCommunityIcons name="trash-can-outline" size={25} color='#fff' />
-        </TouchableOpacity>
-
-      </View>
-
-    );
-  }
-
-  const renderHiddenItem = (data, rowMap) => {
-
-    return (
-
-      <HiddenItemWithAction
-
-        data={data}
-        rowMap={rowMap}
-
-        onClose={() => closeRow(rowMap, data.item._id)} //close the swipe row
-        onDelete={() => deleteRow(rowMap, data.item._id)} //delete item from data base
-
-      />
-    );
-
-  };
-
+if (isLoading) {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.row}>
-        <IconButton
-          icon="pencil"
-          color={Colors.red500}
+    <View style={styles.centered}>
+      <ActivityIndicator size="large" />
+    </View>
+  );
+}
 
-          onPress={() => _updateDBQuantity()}
-        />
-        <Text>שמור שינויים</Text>
+if (products.length == 0 && !isLoading) {
+  return (
+    <SafeAreaView style={styles.centered}>
 
-      </View>
+      <Text style={styles.centered}>No Items found. You could add one!</Text>
 
-      <SwipeListView
-        contentContainerStyle={styles.scrollView}
+      <FloatingAction contentContainerStyle={styles.scrollView}
+
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-          />
-        }
-        data={products}
-        keyExtractor={item => item._id}
-
-        renderItem={({ item }) => (
-          <Items
-            onQuantityChange={changeProductQuantity}
-            navigation={props.navigation}
-            item={item}
-
-
-          />
-        )}
-
-        renderHiddenItem={renderHiddenItem}
-        leftOpenValue={75}
-        rightOpenValue={-150}
-        disableRightSwipe
-      />
-
-
-
-      <FloatingAction
+          />}
         position="left"
         animated={false}
         showBackground={false}
         onPressMain={() => props.navigation.navigate('SearchProduct', { listId: houseId })}
 
       />
-
-      <Button title="לעבור לחיפוש סופרמרקט" color="#66CDAA" onPress={toggleModalVisibility} />
-      <Modal animationType="slide"
-        transparent visible={isModalVisible}
-        presentationStyle="overFullScreen"
-        onDismiss={() => setModalVisible(false)}>
-        <View style={styles.viewWrapper}>
-          <View style={styles.modalView}>
-            <Text>ברדיוס של כמה מטרים לחפש?</Text>
-            <TextInput placeholder="Enter something..."
-              value={inputValue} style={styles.textInput} keyboardType="numeric"
-              onChangeText={(value) => setInputValue(value)} />
-
-            {/** This button is responsible to close the modal */}
-            <Button title="Go " onPress={_combined} />
-            <Button title="Close " onPress={toggleModalVisibility} />
-          </View>
-        </View>
-      </Modal>
-
-
     </SafeAreaView>
 
   );
+}
+const toggleModalVisibility = () => {
+
+  setModalVisible(!isModalVisible);
+};
+
+const _updateDBQuantity = async () => {
+  for (let i = 0; i < products.length; i++) {
+    await api.updateQuantity(houseId, products[i]._id, products[i].quantity);
+
+  }
+}
+const _combined = () => {
+  setIsLoading(true);
+  toggleModalVisibility();
+  _getLocation();
+
+}
+
+const _getLocation = async () => {
+  const { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+  if (status !== 'granted') {
+    console.log('PERMISSION NOT GRANTED!');
+  }
+
+  const location = await Location.getCurrentPositionAsync();
+  setIsLoading(false);
+  props.navigation.navigate('Top5', {
+    location_latitude: location.coords.latitude, location_longitude: location.coords.longitude, listid: houseId, radius: inputValue ? inputValue : "1500", products: products
+  })
+}
+
+const closeRow = (rowMap, rowKey) => {
+  if (rowMap[rowKey]) {
+    rowMap[rowKey].closeRow();
+  }
+}
+
+
+
+const deleteRow = async (rowMap, productId) => {
+
+
+  setProducts(prevProducts => prevProducts.filter(x => x._id !== productId))
+
+  await api.deleteProduct(houseId, productId);
+}
+
+const changeProductQuantity = (productId, newquantity) => {
+
+  setProducts(prevProducts => {
+    prevProducts.find(p => p._id === productId).quantity = newquantity;
+
+    return [...prevProducts];
+  })
+}
+
+const HiddenItemWithAction = props => {
+  const { onClose, onDelete } = props;
+
+  return (
+    <View style={styles.rowBack}>
+
+
+      <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={onClose}>
+        <MaterialCommunityIcons name="close-circle-outline" size={25} color='#fff' />
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={onDelete}>
+        <MaterialCommunityIcons name="trash-can-outline" size={25} color='#fff' />
+      </TouchableOpacity>
+
+    </View>
+
+  );
+}
+
+const renderHiddenItem = (data, rowMap) => {
+
+  return (
+
+    <HiddenItemWithAction
+
+      data={data}
+      rowMap={rowMap}
+
+      onClose={() => closeRow(rowMap, data.item._id)} //close the swipe row
+      onDelete={() => deleteRow(rowMap, data.item._id)} //delete item from data base
+
+    />
+  );
+
+};
+
+return (
+  <SafeAreaView style={styles.container}>
+    <View style={styles.row}>
+      <IconButton
+        icon="pencil"
+        color={Colors.red500}
+
+        onPress={() => _updateDBQuantity()}
+      />
+      <Text>שמור שינויים</Text>
+
+    </View>
+
+    <SwipeListView
+      contentContainerStyle={styles.scrollView}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+      data={products}
+      keyExtractor={item => item._id + item.quantity}
+
+      renderItem={({ item }) => (
+        <Items
+          onQuantityChange={changeProductQuantity}
+          navigation={props.navigation}
+          item={item}
+
+
+        />
+      )}
+
+      renderHiddenItem={renderHiddenItem}
+      leftOpenValue={75}
+      rightOpenValue={-150}
+      disableRightSwipe
+    />
+
+
+
+    <FloatingAction
+      position="left"
+      animated={false}
+      showBackground={false}
+      onPressMain={() => props.navigation.navigate('SearchProduct', { listId: houseId })}
+
+    />
+
+    <Button title="לעבור לחיפוש סופרמרקט" color="#66CDAA" onPress={toggleModalVisibility} />
+    <Modal animationType="slide"
+      transparent visible={isModalVisible}
+      presentationStyle="overFullScreen"
+      onDismiss={() => setModalVisible(false)}>
+      <View style={styles.viewWrapper}>
+        <View style={styles.modalView}>
+          <Text>ברדיוס של כמה מטרים לחפש?</Text>
+          <TextInput placeholder="Enter something..."
+            value={inputValue} style={styles.textInput} keyboardType="numeric"
+            onChangeText={(value) => setInputValue(value)} />
+
+          {/** This button is responsible to close the modal */}
+          <View style={styles.row}>
+          <Button title="Go " onPress={_combined} />
+          <Button title="Close " onPress={toggleModalVisibility} />
+          </View>
+        </View>
+      </View>
+    </Modal>
+
+
+  </SafeAreaView>
+
+);
 }
 
 const styles = StyleSheet.create({

@@ -94,7 +94,7 @@ const OldListsScreen = props => {
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={onClose}>
                     <MaterialCommunityIcons name="close-circle-outline" size={25} color='#fff' />
                 </TouchableOpacity>
-                <TouchableOpacity disabled={!!data.item.uri} style={[styles.backRightBtn, styles.backRightBtnRight, /*data.item.uri && {backgroundColor: 'blue'}*/]} onPress={onAdd}>
+                <TouchableOpacity disabled={!!data.item.uri} style={[styles.backRightBtn, styles.backRightBtnRight, data.item.uri && {backgroundColor: 'red'}]} onPress={onAdd}>
                     <MaterialCommunityIcons name="image-plus" size={25} color='#fff' />
                 </TouchableOpacity>
 

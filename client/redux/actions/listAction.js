@@ -14,7 +14,6 @@ export const USER_ACCEPT_REQUEST_SUCCESS = 'USER_ACCEPT_REQUEST_SUCCESS';
 export const USER_ACCEPT_REQUEST_FAIL = 'USER_ACCEPT_REQUEST_FAIL';
 
 
-
 const BASE_URL = 'http://192.168.56.1:3000';
 //const BASE_URL = 'https://final2704.herokuapp.com';
 
@@ -41,9 +40,7 @@ export const findProductByName = (itemData) => {
         const resultData = await result.json();
         //console.log('Line 27');
 
-        //console.log("resultData");
-        //console.log(resultData);
-
+        console.log(resultData);
 
         if (resultData.success) {
             dispatch({

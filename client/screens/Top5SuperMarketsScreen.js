@@ -20,7 +20,7 @@ const Top5SuperMarketsScreen = props => {
 
 
     useEffect(() => {
-    //    api.getSupermarkets(location_latitude, location_longitude, radius).then(result => setData(result)).catch(e => console.warn(e));
+       api.getSupermarkets(location_latitude, location_longitude, radius).then(result => setData(result)).catch(e => console.warn(e));
         
         
     }, []);

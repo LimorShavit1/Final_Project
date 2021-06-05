@@ -26,8 +26,6 @@ const AddHomeScreen = props => {
   const {CustumerID} = props.route.params;
   console.log(CustumerID);
 
- 
-
     const [isLoading, setIsLoading] = useState(false);
 
     if(isLoading) {

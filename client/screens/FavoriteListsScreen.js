@@ -76,12 +76,14 @@ const FavoriteListsScreen = props => {
     }
 
     const _sayNo=()=>{
+        
         toggleModalVisibility();
         _backToList();
     }
     const _sayYes=()=>{
+        
         toggleModalVisibility();
-        const recycledList = {CustumerID:clicked.CustumerID,ListName: inputValue, items:clicked.items};
+        const recycledList = {CustumerID:clicked.CustumerID,ListName: inputValue ? inputValue: "No Name" , items:clicked.items};
         setclicked(recycledList);
         _backToList(recycledList);
     }
@@ -126,13 +128,13 @@ const FavoriteListsScreen = props => {
             <Modal animationType="slide"
                 transparent visible={isModalVisible}
                 presentationStyle="overFullScreen"
-                onDismiss={toggleModalVisibility}>
+                onDismiss={() => setModalVisible(false)}>
                 <View style={styles.viewWrapper}>
                     <View style={styles.modalView}>
                         <Text>לשנות את השם לרשימה?</Text>
                         <TextInput placeholder="Enter something..."
                             value={inputValue} style={styles.textInput} 
-                            onChangeText={(value) => setInputValue(value)} />
+                            onChangeText={(value) => setInputValue(value ? value: ["No Name"])} />
 
                         {/** This button is responsible to close the modal */}
                         <View style={styles.row} >

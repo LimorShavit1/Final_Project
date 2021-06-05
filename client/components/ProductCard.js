@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, ImageBackground, TouchableOpacity } from 'react
 const ProductCard = ({ addItem,...props})=> {
     return (
         <TouchableOpacity onPress={() =>  {
+            console.log("pressed!");
             addItem(props.product_name,props.product_unit_name,props.manufacturer_id,props.product_barcode,props.product_description,props.quantity,props.manufacturer_name)
           }}>
             

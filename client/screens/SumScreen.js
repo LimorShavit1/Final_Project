@@ -14,9 +14,8 @@ const SumScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
     const api = useApi();
     const [priceView, setpriceView] = useState([]);
-    var price = 0;
-    var arr = [];
-    //const [superMarkets, setsuperMarkets] = useState([]);
+  
+
     useEffect(() => {
         setIsLoading(true);
         _count();
@@ -33,30 +32,23 @@ const SumScreen = props => {
     }
   
     const _count = async () => {
-        var price = 0;
-        var arr = [];
-        for (let i = 0; i < supermarkets.length; i++) {
-            price = 0;
-            arr = [];
-            for (let j = 0; j < products.length; j++) {
-                try {
-                    const result = await api.getPrice(supermarkets[i].store_id, products[j].product_barcode);
-                    const p = result[0].store_product_last_price
+        const results = [];
 
-                    price = price + p * products[j].quantity;
-                    //console.log(price);
-
-                } catch (e) {
-                    arr.push(products[j])
-                // console.log(products[j]);
-                }
-
-            }
-            setpriceView(oldArray => [...oldArray, {cart_price:price.toFixed(2),missing:arr,supermarket:supermarkets[i]}]);
-           
+        for(let supermarket of supermarkets){
+            const missingItems = [];
+            const price = 0;
+            await Promise.all(products.map(async product => {
+                try{
+                    const prodinfo = await api.getPrice(supermarket.store_id, product.product_barcode);
+                    price += product.quantity * prodinfo[0].store_product_price;
             
+                } catch (e){
+                    missingItems.push(product)
+                }
+            }));
+            results.push({cart_price:price.toFixed(2),missing:missingItems,supermarket});
         }
-        
+        setpriceView(results);
     }
     console.log("*********************************************")
     console.log(priceView);
