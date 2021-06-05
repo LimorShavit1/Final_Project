@@ -2,17 +2,17 @@ import React from 'react';
 import { StyleSheet, View, Text, ImageBackground, TouchableOpacity, Image } from 'react-native';
 import { Checkbox } from 'react-native-paper';
 
-const Supermarkets = ({chosen,unchosen,isOpen, ...props }) => {
+const Supermarkets = ({/*chosen,unchosen,*/isOpen, ...props }) => {
     
-    const [checked, setChecked] = React.useState(false);
-    const _buttonClick=()=>{
-        setChecked(!checked);
-        chosen(props.item);
-    }
-    const _buttonClick2=()=>{
-        setChecked(!checked);
-        unchosen(props.item);
-    }
+    // const [checked, setChecked] = React.useState(false);
+    // const _buttonClick=()=>{
+    //     setChecked(!checked);
+    //     //chosen(props.item);
+    // }
+    // const _buttonClick2=()=>{
+    //     setChecked(!checked);
+    //     //unchosen(props.item);
+    // }
     return (
         <TouchableOpacity>
             <View style={styles.listItem}>
@@ -24,13 +24,13 @@ const Supermarkets = ({chosen,unchosen,isOpen, ...props }) => {
                     <Text style={styles.title}>{props.item.placeName}</Text>
                 </View>
 
-                <Text note style={{ marginTop: 5, color: isOpen ? 'green' : 'red' }}>{isOpen ? 'Open' : 'Closed'}</Text>
-                <Checkbox
+                 <Text note style={{ marginTop: 5, color: isOpen ? 'green' : 'red' }}>{isOpen ? 'Open' : 'Closed'}</Text> 
+                {/* <Checkbox
                     status={checked ? 'checked' : 'unchecked'}
                     onPress={() => {
                         checked ? _buttonClick2() : _buttonClick()
                     }}
-                />
+                /> */}
             </View>
 
         </TouchableOpacity >

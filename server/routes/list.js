@@ -16,12 +16,12 @@ const House = require('../models/House');
 const validateInput = [
     check('productName').isLength({ min: 2 }).withMessage('Product name inValid. Must contain atleast 2 characters'),
     //email is to add another user to list
-    check('email').isEmail().withMessage('Please provide a valid email'),
+    // check('email').isEmail().withMessage('Please provide a valid email'),
 ]
 
 // route -> /api/list/findItemByName
 router.post('/findItemByName', validateInput, async (req, res) => {
-
+    
     // validate data against validation rules in "validateProduct"
     const errors = validationResult(req);
 
@@ -86,8 +86,8 @@ router.post('/addUserToList', async (req, res) => {
     }
 
     //check if user we want to add already has this list
-    const existInList = await House.findOne({ _id: req.body.Requests.listId , CustumerID: user._id})
-    if(existInList){
+    const existInList = await House.findOne({ _id: req.body.Requests.listId, CustumerID: user._id })
+    if (existInList) {
         return res.status(400).send({ success: false, message: "Oops! You are trying to add an existing user." });
     }
 

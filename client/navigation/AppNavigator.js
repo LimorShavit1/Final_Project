@@ -4,8 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MaterialIcons } from '@expo/vector-icons';
-
-//import screen components
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -19,6 +17,11 @@ import SearchProductScreen from '../screens/SearchProductScreen';
 import HistoryListDitails from '../screens/HistoryListDitails';
 import AddUserScreen from '../screens/AddUserScreen';
 import RequestsScreen from '../screens/RequestsScreen';
+import AboutScreen from '../screens/AboutScreen';
+import imageScreen from '../screens/imageScreen';
+import SumScreen from '../screens/SumScreen';
+
+
 import { DrawerContent } from './DrawerContent';
 import { Header } from 'react-native/Libraries/NewAppScreen';
 
@@ -57,13 +60,6 @@ function FavoritesNavigator() {
     );
 }
 
-function SearchListNavigator() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="Search List" component={SearchListScreen} options={{ headerLeft: null }} />
-        </Stack.Navigator>
-    );
-}
 
 function HomeStackNavigator() {
     return (
@@ -73,40 +69,49 @@ function HomeStackNavigator() {
                 headerLeft: () => <HeaderLeft />
             }}
         >
+
+         
             <Stack.Screen name="Home"
                 component={HomeScreen}
 
             />
 
             <Stack.Screen name="HistoryListDitails"
+                getId={({ params }) => params.id}
                 component={HistoryListDitails}
 
             />
+            <Stack.Screen name="imageScreen"
+                component={imageScreen}
 
+            />
             <Stack.Screen name="NewList"
                 component={AddHomeScreen}
 
             />
-
             <Stack.Screen name="HomeDetails"
                 component={HomeDetailsScreen}
+            />
+
+            <Stack.Screen name="SumScreen"
+                component={SumScreen}
             />
 
             <Stack.Screen name="Top5"
                 component={Top5SuperMarketsScreen}
             />
-
+            <Stack.Screen name="AboutScreen"
+                component={AboutScreen}
+            />
             <Stack.Screen name="OldLists"
                 component={OldListsScreen}
 
             />
-
             <Stack.Screen name="SearchProduct"
                 component={SearchProductScreen}
 
             />
-
-            <Stack.Screen name="AddUserToList"
+               <Stack.Screen name="AddUserScreen"
                 component={AddUserScreen}
 
             />
@@ -171,7 +176,11 @@ function AppNavigator() {
                     component={RegisterScreen}
                     options={{ headerShown: false }}
                 />
+                <Stack.Screen name="HistoryListDitails"
+                    getId={({ params }) => params.id}
+                    component={HistoryListDitails}
 
+                />
 
                 <Stack.Screen
                     name="ForgotPassword"

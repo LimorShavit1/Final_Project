@@ -14,16 +14,23 @@ const RequestsScreen = props => {
     //const { houses } = useSelector(state => state.houses);
     const { houses } = useSelector(state => state.house);
 
-    const [LoadPage, setLoadPage] = useState(false);
-    const [Requests_arr, setRequests_arr] = useState([]);
-
-
     const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(listAction.getMyRequests(user));
     }, [requests])
+    if(requests.length===0){
+        return (
+            <View style={styles.centered}>
 
+                <Text style={styles.centered}>אין בקשות ברשימה</Text>
+
+
+            </View>
+
+        );
+
+    }
 
     return (
 

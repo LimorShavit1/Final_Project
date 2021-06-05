@@ -5,7 +5,7 @@ import * as listAction from '../redux/actions/listAction';
 
 
 const RequestCard = props => {
-    console.log('INNNN RequestCard');
+
     const [loadPage, setLoadPage] = useState(false);
     const [Requests_arr, setRequests_arr] = useState([]);
 

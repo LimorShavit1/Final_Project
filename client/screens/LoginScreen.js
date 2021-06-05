@@ -40,7 +40,7 @@ const LoginScreen = navData => {
                     onSubmit={(values) => {
                         
                         values.email = values.email.toLowerCase();
-
+                        
                         dispatch(authAction.loginUser(values))
                             .then(async result => { //get the result from authActionjs: line 70
                                 //the result contain the token
@@ -66,12 +66,13 @@ const LoginScreen = navData => {
                     {(props) => (
                         //props pass by formik
                         //function that returns automatically
-                        <View style={styles.container}>
-
-                            <Image source={require('../assets/images/mobileCart.png')} style={styles.image} />
+                        
 
 
-                            <View>
+
+
+                            <View style={styles.container}>
+                                <Image source={require('../assets/images/mobileCart.png')} style={styles.image} />
 
                                 <TextInput style={styles.input}
                                     placeholder="Email"
@@ -109,13 +110,12 @@ const LoginScreen = navData => {
                                 </TouchableOpacity>
 
                                 <View style={styles.registerContainer}>
-                                    <Text style={styles.registerText}>Don't have account?</Text>
                                     <TouchableOpacity onPress={() => navData.navigation.navigate('Register')}>
-                                        <Text style={styles.registerButton}> Register</Text>
+                                        <Text style={styles.registerText}>Don't have account? Register</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
+                        
                     )}
 
                 </Formik>
@@ -132,10 +132,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#ffffff',
     },
-    logo: {
-        alignItems: 'center',
-        marginBottom: 40
-    },
+
     image: {
         marginTop: 90,
         width: 130,
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     registerButton: {
-        color: "#738289",
+        //color: "#738289",
         fontSize: 16,
         fontWeight: "bold"
     }

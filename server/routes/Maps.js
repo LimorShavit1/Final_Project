@@ -3,7 +3,7 @@ const axios = require('axios');
 
 
 const DEFAULT_PHOTO_URL = 'https://image.freepik.com/free-vector/supermarket-icon_24911-7803.jpg';
-
+//  /api/maps/supermarkets
 router.get('/supermarkets', async (req, res) => {
     try{
     const { lat, long,radius} = req.query;
@@ -22,11 +22,46 @@ router.get('/supermarkets', async (req, res) => {
         isOpen: result.opening_hours && result.opening_hours.open_now,
         placeAddress: result.vicinity
     }))
-    res.send(places);
-    //res.send(places.slice(0,10))
+    //res.send(places);
+    res.send(places.slice(0,30))
 } catch(e){
     console.log(e)
 }
 })
+// /api/maps/supergetmarkets 
+router.get('/supergetmarkets',async (req, res)=>{
+    
+    const {lat,long,radius} = req.query;
+    
+    try{
+        
+        const result = await axios.post('https://api.superget.co.il/', 
+        `action=GetStoresByGPS&latitude=${lat}&longitude=${long}&km_radius=${radius}&limit=2&api_key=${process.env.SUPERGET_KEY2}`)
+       
+       
+        res.send(result.data);
+    } catch (e){
+        res.send(e);
+    }
+})// /api/maps/getPrice/supergetmarkets <===get all products of specific store
+router.get('/getPrice/supergetmarkets',async (req, res)=>{
+    
+    const {store_id, product_barcode} = req.query;
+    console.log(store_id, product_barcode);
+    try{
+        
+        const result = await axios.post('https://api.superget.co.il/', 
+        `action=GetPriceByProductBarCode&store_id=${store_id}&product_barcode=${product_barcode}&api_key=${process.env.SUPERGET_KEY2}`)
+        const {data} = result;
 
+        if(data.error_type){
+            return res.sendStatus(404);
+        }
+
+        res.send(data);
+       
+    } catch (e){
+        res.send(e);
+    }
+})
 module.exports = router;

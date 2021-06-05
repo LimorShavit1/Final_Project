@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, View, Text, ImageBackground, TouchableOpacity } from 'react-native';
 
-const ProductCard = props => {
-    console.log('INNNN ProductCard');
-
-
+const ProductCard = ({ addItem,...props})=> {
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() =>  {
+            addItem(props.product_name,props.product_unit_name,props.manufacturer_id,props.product_barcode,props.product_description,props.quantity,props.manufacturer_name)
+          }}>
+            
             <View style={styles.card}>
                 <View style={styles.description}>
                     <Text style={styles.title}>
@@ -26,7 +26,6 @@ const ProductCard = props => {
     );
 }
 
-////
 const styles = StyleSheet.create({
     c: {
         marginTop: 50,

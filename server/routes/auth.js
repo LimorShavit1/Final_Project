@@ -88,14 +88,14 @@ router.post('/Login', loginValidation, async (req, res) => {
 
     // validate data against validation rules in "loginValidation"
     const errors = validationResult(req);
-    //before checking in DB we check if we got any user from login form
+    //begor checking in DB we check if we got any user fro login form
     if (!errors.isEmpty()) { //if we have an error
         return res.status(400).json({ errors: errors.array() });
 
     }
 
     //check if email exist in system
-    const user = await User.findOne({ email: req.body.email.toLowerCase() })
+    const user = await User.findOne({ email: req.body.email })
     if (!user) return res.status(400).send({ success: false, message: 'User is not registered' });
 
     //check if password correct

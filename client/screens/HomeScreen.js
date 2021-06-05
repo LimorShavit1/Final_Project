@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, View, FlatList, ActivityIndicator, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Touchable, SegmentedControlIOSComponent } from 'react-native';
+import { Alert, RefreshControl, StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
-import jwtDecode from 'jwt-decode';
 import { FloatingAction } from 'react-native-floating-action';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-
+import { AntDesign } from '@expo/vector-icons';
 import { SearchBar } from 'react-native-elements';
-
 import Card from '../components/Card';
 import * as houseAction from '../redux/actions/houseAction';
-import AddUserScreen from './AddUserScreen';
+import { useApi } from '../hooks/api.hook';
+
 
 const HomeScreen = props => {
-    const user = useSelector(state => state.auth.user);
-    //console.log("print user row 19--> " + user.fullName + " " + user._id);
+    const user = useSelector(state => state.auth.user)
     const [search, setSearch] = useState('');
-
+    const [refreshing, setRefreshing] = React.useState(false);
+    const api = useApi();
 
     const logOut = props => {
         //while logging out we want to remove our token
@@ -34,20 +32,21 @@ const HomeScreen = props => {
     const dispatch = useDispatch();
 
     const [isLoading, setIsLoading] = useState(false);
-
     const { houses } = useSelector(state => state.house);
     const { requests } = useSelector(state => state.list);
 
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await dispatch(houseAction.fetchHouses(user._id));
+        setRefreshing(false);
+    };
     useEffect(() => {
-
         setIsLoading(true);
         dispatch(houseAction.fetchHouses(user._id))
             .then(() => setIsLoading(false))
             .catch(() => setIsLoading(false));
-    }, [dispatch,requests]);
-
-    
+    }, [dispatch/*,request*/]);
 
     if (isLoading) {
         return (
@@ -59,17 +58,22 @@ const HomeScreen = props => {
 
     if (houses.length === 0) {
         return (
-            <View style={styles.centered}>
+            <SafeAreaView style={styles.centered}>
                 <Text style={styles.welcomUserText}>Welcome {user.fullName}</Text>
                 <Text style={styles.centered}>No lists found. You could add one!</Text>
 
-                <FloatingAction
+                <FloatingAction contentContainerStyle={styles.scrollView}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />}
                     position="left"
                     animated={false}
                     showBackground={false}
                     onPressMain={() => props.navigation.navigate('NewList', { CustumerID: user._id })}
                 />
-            </View>
+            </SafeAreaView>
 
         );
     }
@@ -80,7 +84,14 @@ const HomeScreen = props => {
         }
     }
 
+    const AddUserToCurrList = (rowMap, rowKey) => {
+        const listName = houses.find(item =>
+            item._id == rowKey
+        );
+        console.log("rowKey:" + rowKey);
 
+        props.navigation.navigate('AddUserScreen', { listId: rowKey, listName: listName.ListName })
+    }
 
     const deleteRow = (rowMap, rowKey) => {
         dispatch(houseAction.deleteList(rowKey))
@@ -91,24 +102,36 @@ const HomeScreen = props => {
 
                 Alert.alert('An error occurred. Try Again', [{ text: 'OK' }])
             })
-
-
     }
 
-    const AddUserToCurrList = (rowMap, rowKey) => {
-        const listName = houses.find(item =>
-            item._id == rowKey
-        );
+    const addTOHistory = async (rowMap, houseId) => {
 
-        props.navigation.navigate('AddUserToList', { listId: rowKey, listName: listName.ListName })
-    }
+        closeRow(rowMap, houseId);
+        const itemToHistory = houses.find(item => item._id === houseId);
+        const price = 0;
+        await api.addtoHistory(itemToHistory, price);
+        dispatch(houseAction.deleteList(houseId))
+            .then(() => {
+                Alert.alert('You finish with this list');
+            })
+            .catch(() => {
+
+                Alert.alert('An error occurred. Try Again', [{ text: 'OK' }])
+            })
+    };
+
+
+
 
     const HiddenItemWithAction = props => {
-        const { onClose, onDelete, onShare } = props;
+        const { onClose, onDelete, onShare, onHistory } = props;
 
         return (
             <View style={styles.rowBack}>
-
+                <TouchableOpacity onPress={onHistory}>
+                    <MaterialCommunityIcons name="history" size={25} color='#fff' />
+                </TouchableOpacity>
+                <Text>                                                                      </Text>
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft2]} onPress={onShare}>
                     <AntDesign name="adduser" size={25} color='#fff' />
                 </TouchableOpacity>
@@ -118,9 +141,7 @@ const HomeScreen = props => {
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={onDelete}>
                     <MaterialCommunityIcons name="trash-can-outline" size={25} color='#fff' />
                 </TouchableOpacity>
-
             </View>
-
         );
     }
 
@@ -132,17 +153,20 @@ const HomeScreen = props => {
 
                 data={data}
                 rowMap={rowMap}
-                //data.item._id === listID
+
                 onClose={() => closeRow(rowMap, data.item._id)} //close the swipe row
                 onDelete={() => deleteRow(rowMap, data.item._id)} //delete item from data base
                 onShare={() => AddUserToCurrList(rowMap, data.item._id)} //share the list
+                onHistory={() => addTOHistory(rowMap, data.item._id)}//add to hosroty withoutprice
             />
-
         );
 
     };
     return (
-        <View style={styles.container}>
+
+
+
+        <SafeAreaView style={styles.container}>
 
             <SearchBar
                 inputStyle={{ backgroundColor: 'white' }}
@@ -164,7 +188,13 @@ const HomeScreen = props => {
 
             <Text style={styles.welcomUserText}>{`Welcome ${user.fullName}`}</Text>
 
-            <SwipeListView
+            <SwipeListView contentContainerStyle={styles.scrollView}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
                 data={search ? houses.filter(h => h.ListName.includes(search)) : houses}
 
                 keyExtractor={item => item._id}
@@ -184,7 +214,7 @@ const HomeScreen = props => {
                 renderHiddenItem={renderHiddenItem}
                 leftOpenValue={75}
                 rightOpenValue={-150}
-                disableRightSwipe
+
             />
             <FloatingAction
                 position="left"
@@ -192,7 +222,7 @@ const HomeScreen = props => {
                 showBackground={false}
                 onPressMain={() => props.navigation.navigate('NewList', { CustumerID: user._id })}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -242,6 +272,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderRadius: 10,
     },
+
     backRightBtn: {
         alignItems: 'flex-end',
         bottom: 0,
@@ -266,7 +297,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5,
         height: '98%',
-    },
+    }
 
 
 })

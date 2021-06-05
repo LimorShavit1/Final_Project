@@ -10,7 +10,7 @@ import { useApi } from '../hooks/api.hook';
 
 
 const Top5SuperMarketsScreen = props => {
-    const { location_latitude, location_longitude, listid, radius } = props.route.params;
+    const { location_latitude, location_longitude, listid, radius,products } = props.route.params;
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
     const api = useApi();
@@ -20,17 +20,19 @@ const Top5SuperMarketsScreen = props => {
 
 
     useEffect(() => {
-        api.getSupermarkets(location_latitude, location_longitude, radius).then(result => setData(result)).catch(e => console.warn(e));
+    //    api.getSupermarkets(location_latitude, location_longitude, radius).then(result => setData(result)).catch(e => console.warn(e));
+        
+        
     }, []);
 
-    const _chosen = (SuperMarket) => {
-        chosen.push(SuperMarket);
-        console.log(chosen);
-    }
-    const _unchosen = (SuperMarket) => {
-        chosen.pop(SuperMarket);
-        console.log(chosen);
-    }
+    // const _chosen = (SuperMarket) => {
+    //     chosen.push(SuperMarket);
+    //     console.log(chosen);
+    // }
+    // const _unchosen = (SuperMarket) => {
+    //     chosen.pop(SuperMarket);
+    //     console.log(chosen);
+    // }
 
     var coord = [];
 
@@ -47,7 +49,16 @@ const Top5SuperMarketsScreen = props => {
             />
         )
     }
-
+    const _getSupermarkets = async () => {
+     
+        const result = await api.SuperGetMap(location_latitude, location_longitude, radius / 1000);
+        setLoading(false);
+        props.navigation.navigate('SumScreen', {
+            lat:location_latitude,long:location_longitude,radius:radius,products:products,listid:listid,supermarkets:result
+          })
+      }
+    
+     
 
     return (
 
@@ -76,7 +87,7 @@ const Top5SuperMarketsScreen = props => {
                     radius={parseFloat(radius)}
                     fillColor={'rgba(200,300,200,0.5)'}
                 />
-                {coord}
+                {coord} 
 
 
             </MapView>
@@ -90,14 +101,12 @@ const Top5SuperMarketsScreen = props => {
                         navigation={props.navigation}
                         isOpen={item.isOpen}
                         item={item}
-                        chosen={_chosen}
-                        unchosen={_unchosen}
+                        //chosen={_chosen}
+                        //unchosen={_unchosen}
                     />
                 )}
             />
-            <Button title="לעבור לחישוב" color="#66CDAA"  onPress={() => console.log(chosen)}/>
-
-          
+            <Button title="לעבור לחישוב" color="#66CDAA"  onPress={_getSupermarkets}/>
 
         </View>
 
@@ -126,4 +135,6 @@ const styles = StyleSheet.create({
     },
 });
 export default Top5SuperMarketsScreen;
+
+
 

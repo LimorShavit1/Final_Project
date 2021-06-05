@@ -1,11 +1,21 @@
-import React,{ useState } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useApi } from '../hooks/api.hook';
-const OldList = ({userID,removeFav, addFav, isLiked, ...props }) => {
-  
+import React, { useState } from 'react';
+import { StyleSheet,View, Text, Image,TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+
+const FavoriteList = ({ saveClicked, backToList, ...props }) => {
+
+    
+    const toDo = (userID, ListName, items) => {
+        console.log("toDo");
+        saveClicked(userID, ListName, items);
+        //backToList(userID, ListName, items);
+    }
+    
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => props.navigation.navigate('HistoryListDitails', {
+            items: props.item.items
+        })}>
             <View style={styles.listItem}>
                 <Image
                     source={{ uri: 'https://cdn1.iconfinder.com/data/icons/business-startup-48/64/1076-512.png' }}
@@ -25,14 +35,15 @@ const OldList = ({userID,removeFav, addFav, isLiked, ...props }) => {
 
 
                 </View>
-                <MaterialIcons style={styles.icon} size={40} name={isLiked ? 'favorite' : 'favorite-border'}
+                <MaterialCommunityIcons style={styles.icon} size={40} name={'recycle'}
                     onPress={() => {
-                        isLiked ?
-                        removeFav(props.item._id) : addFav(props.item._id);
+                       // {toggleModalVisibility}
+                       { toDo(props.userID, props.item.ListName, props.item.items) }
                     }} />
 
             </View>
 
+         
         </TouchableOpacity >
     );
 }
@@ -44,7 +55,6 @@ const styles = StyleSheet.create({
 
 
     },
-
 
     listItem: {
         marginTop: 10,
@@ -66,10 +76,8 @@ const styles = StyleSheet.create({
     },
     icon: {
 
-        color: "#72bcd4",
+        color: '#f08080',
         width: 50,
-
-
     },
 
     description: {
@@ -84,4 +92,4 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
 });
-export default OldList;
+export default FavoriteList;

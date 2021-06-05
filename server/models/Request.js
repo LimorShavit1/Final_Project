@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 //Each user has his own array of requests
 //sender : _id --> who send the request

@@ -35,9 +35,7 @@ const RegisterScreen = navData => {
                     validationSchema={formSchema}
                     //onSubmit : when this form is submited we can have access to the "values"
                     onSubmit={(values) => {
-                        
                         values.email = values.email.toLowerCase();
-
                         dispatch(authAction.registerUser(values))
                             .then(async result => {
                                 if (result.success) {
@@ -57,8 +55,7 @@ const RegisterScreen = navData => {
                     }}
                 >
                     {(props) => (
-                        //props pass by formik
-                        //function that returns automatically
+                        
                         <View style={styles.container}>
 
                             <Image source={require('../assets/images/mobileCart.png')} style={styles.image} />

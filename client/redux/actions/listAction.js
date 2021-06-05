@@ -41,7 +41,9 @@ export const findProductByName = (itemData) => {
         const resultData = await result.json();
         //console.log('Line 27');
 
+        //console.log("resultData");
         //console.log(resultData);
+
 
         if (resultData.success) {
             dispatch({

@@ -49,11 +49,41 @@ const SearchProductScreen = props => {
        
     }
 
+    const onSubmit = (values) => {
+        //sent req to backend
+        console.log("limor");
+        values.productName = values.productName.trim();
+        setProduct(values.productName);
+
+        dispatch(listAction.findProductByName(values))
+            .then(async result => { //get the result from listAction.js
+
+                if (result.success) {
+                    try {
+                        //Pdata --> from backend
+
+                        //reset products_list
+                        products_list = [];
+                        products_list.push(JSON.parse(result.Pdata));
+                        setProductsList([...products_list]);
+                        setFetchingProductsSucced(true);
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                } else {
+                    //this will bting the message we have in the result obj
+                    Alert.alert(result.message);
+                }
+            })
+            .catch(err => console.log(err));
+    }
+
     //render ProductCard component
     if (FetchingProductsSucced) {
         if (ProductsList) {
             products_list = ProductsList;
-            console.log(ProductsList);
+           
         }
     }
 
@@ -73,35 +103,7 @@ const SearchProductScreen = props => {
                             }}
                             validationSchema={formSchema}
                             //onSubmit : when this form is submited we can have access to the "values"
-                            onSubmit={(values) => {
-                                //sent req to backend
-                                values.productName = values.productName.trim();
-                                console.log(values);
-                                setProduct(values.productName);
-
-                                dispatch(listAction.findProductByName(values))
-                                    .then(async result => { //get the result from listAction.js
-
-                                        if (result.success) {
-                                            try {
-                                                //Pdata --> from backend
-
-                                                //reset products_list
-                                                products_list = [];
-                                                products_list.push(JSON.parse(result.Pdata));
-                                                setProductsList([...products_list]);
-                                                setFetchingProductsSucced(true);
-
-                                            } catch (err) {
-                                                console.log(err);
-                                            }
-                                        } else {
-                                            //this will bting the message we have in the result obj
-                                            Alert.alert(result.message);
-                                        }
-                                    })
-                                    .catch(err => console.log(err));
-                            }}
+                            onSubmit={onSubmit}
                         >
                             {(props) => (
                                 //props pass by formik

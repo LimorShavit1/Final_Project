@@ -1,7 +1,22 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
+const multer  = require('multer');
+const path = require('path');
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname)) //Appending extension
+    }
+})
+
+const upload = multer({ storage })
+
 
 const OldList = require('../models/OldList');
+const { route } = require('./Maps');
 
 const router = express.Router();
 
@@ -19,9 +34,10 @@ const validate = [
 
 // /api/OldList/:price   <==save the list in the history
 router.post('/:price', validate, (req, res) => {
+   
     const price = req.params.price;
    
-
+    console.log("I ame here:",price);
     const errors = validationResult(req);
     var d = new Date();  
     
@@ -33,6 +49,7 @@ router.post('/:price', validate, (req, res) => {
         CustumerID: req.body.CustumerID,
         ListName: req.body.ListName,
         items:req.body.items,
+        uri:req.body.uri,
         date: d,
         price: price
 
@@ -68,6 +85,18 @@ router.get('/:id', (req, res) => {
 });
 
 
+// /api/OldList/setImage/:OldListid
+router.post('/setImage/:OldlistID/', upload.single('image'),async (req, res)=>{
+    const {OldlistID}= req.params;
+    try{
+        
+        await OldList.updateOne({_id:OldlistID},{'uri':`${process.env.SERVER_URL}/uploads/${req.file.filename}`}, {upsert: true})
+       
+        res.sendStatus(200);
+    } catch (e){
+        res.send(e);
+    }
+})
 // /api/OldList/id <====delete list by list ID
 router.delete('/:id', async (req, res) => {
     const OldListId = req.params.id;
@@ -77,7 +106,6 @@ router.delete('/:id', async (req, res) => {
     } catch (e) {
         res.send(e);
     }
-
 
 })
 

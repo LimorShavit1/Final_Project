@@ -1,13 +1,10 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose'); // use mongoose to connect to DB
-const cors = require('cors');
-app.use(cors())
-app.use(express.json());
 require('dotenv').config();
-var bodyParser = require('body-parser');
+const morgan = require('morgan');
 
-
+app.use(express.json());
 //middleware:
 const authRoutes = require('./routes/auth');
 const verifyToken = require('./routes/verifyToken');
@@ -23,6 +20,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     .then(() => {
         //connect web:
 
+
         const port = process.env.PORT || 3000; // if we dont have port in env file use port=3000
         app.listen(port, () => {
             console.log(`App listening at http://localhost:${port}`);
@@ -30,6 +28,10 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 
     })
     .catch(err => console.log(err))
+
+app.use(morgan('dev'));
+
+app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {
     res.send('welcome to home route');
@@ -50,5 +52,3 @@ app.use('/api/OldList', OldList);
 app.use('/api/favorite', Favorite);
 
 
-//mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.ymfp4.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
-//{ useNewUrlParser: true, useUnifiedTopology: true })
