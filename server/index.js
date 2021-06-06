@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose'); // use mongoose to connect to DB
 require('dotenv').config();
-// const morgan = require('morgan');
+const morgan = require('morgan');
 
 app.use(express.json());
 //middleware:
@@ -19,7 +19,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         //connect web:
-        
+
         const port = process.env.PORT || 3000; // if we dont have port in env file use port=3000
         app.listen(port, () => {
             console.log(`App listening at http://localhost:${port}`);
@@ -28,7 +28,18 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     })
     .catch(err => console.log(err))
 
-// app.use(morgan('dev'));
+
+if (process.env.NODE_ENV === "production") {
+    // Exprees will serve up production assets
+    app.use(express.static("../client/build"));
+    // Express serve up index.html file if it doesn't recognize route
+    const path = require("path");
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "../", "client", "build", "index.html"));
+    });
+}
+
+app.use(morgan('dev'));
 
 app.use('/uploads', express.static('uploads'))
 
@@ -37,17 +48,17 @@ app.get('/', (req, res) => {
 });
 
 // cant access this route without being authenticated
-app.get('/api/user/profile', verifyToken , (req, res) => {
+app.get('/api/user/profile', verifyToken, (req, res) => {
     console.log(req.user);
-    res.send({success: true , data: req.user});
+    res.send({ success: true, data: req.user });
 });
 
 //middleware:
 app.use('/api/users', authRoutes);
-app.use('/api/houses',houses);
-app.use('/api/maps',maps);
+app.use('/api/houses', houses);
+app.use('/api/maps', maps);
 app.use('/api/list', listItem);
-app.use('/api/OldList',OldList);
+app.use('/api/OldList', OldList);
 app.use('/api/favorite', Favorite);
 
 // DB_USERNAME ='limorsh'
