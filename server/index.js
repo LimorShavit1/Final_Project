@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose'); // use mongoose to connect to DB
 require('dotenv').config();
-const morgan = require('morgan');
+// const morgan = require('morgan');
 
 app.use(express.json());
 //middleware:
@@ -28,7 +28,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
     })
     .catch(err => console.log(err))
 
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 app.use('/uploads', express.static('uploads'))
 
