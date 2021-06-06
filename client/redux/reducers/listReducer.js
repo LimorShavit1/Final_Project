@@ -15,6 +15,7 @@ import {
 const initialState = {
     products: [],
     requests: [],
+    requestsLength : 0 , 
     msg: {},
     errors: {}
 }

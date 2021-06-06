@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, KeyboardAvoidingView, TouchableOpacity, FlatList, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, KeyboardAvoidingView, ActivityIndicator, FlatList, ScrollView, Alert } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useApi } from '../hooks/api.hook';
 
@@ -11,26 +11,30 @@ const RequestsScreen = props => {
 
     const user = useSelector(state => state.auth.user);
     const { requests } = useSelector(state => state.list);
-    //const { houses } = useSelector(state => state.houses);
     const { houses } = useSelector(state => state.house);
+    const {requestsLength} = useSelector(state => state.list);
+
+    //const [reqLength, setReqLength] = useState();
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(listAction.getMyRequests(user));
+        dispatch(listAction.getMyRequests(user))
     }, [requests])
-    if(requests.length===0){
-        return (
-            <View style={styles.centered}>
 
-                <Text style={styles.centered}>אין בקשות ברשימה</Text>
+    //const lrn_req = 
+    async() => {console.log(" requests:", await requests.length)};
+    // if (requests.length < 1) {
+    //     return (
+    //         <SafeAreaView style={styles.centered}>
+    //             <View style={styles.centered}>
+    //                 <Text style={styles.centered}>אין בקשות חדשות</Text>
+    //             </View>
+    //         </SafeAreaView>
 
+    //     );
 
-            </View>
-
-        );
-
-    }
+    // }
 
     return (
 

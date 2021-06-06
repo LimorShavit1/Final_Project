@@ -2,8 +2,8 @@ import axios from 'axios';
 import { useMemo } from 'react';
 
 
-const BASE_URL = 'http://192.168.56.1:3000';
-//const BASE_URL = 'https://final2704.herokuapp.com';
+const BASE_URL = 'http://192.168.56.1:3000/api';
+//const BASE_URL = 'https://final2704.herokuapp.com/api';
 
 export function useApi() {
 

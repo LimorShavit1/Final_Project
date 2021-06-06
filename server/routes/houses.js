@@ -61,7 +61,7 @@ router.get('/ByCustumerId/:id', (req, res) => {
 // /api/houses/id
 router.get('/:id', (req, res) => {
     const houseId = req.params.id;
-    console.log("in!@#$");
+
     House.findById(houseId)
         .then(house => {
             res.send(house);

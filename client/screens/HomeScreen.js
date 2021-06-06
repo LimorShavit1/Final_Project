@@ -46,7 +46,7 @@ const HomeScreen = props => {
         dispatch(houseAction.fetchHouses(user._id))
             .then(() => setIsLoading(false))
             .catch(() => setIsLoading(false));
-    }, [dispatch/*,request*/]);
+    }, [dispatch,requests]);
 
     if (isLoading) {
         return (
