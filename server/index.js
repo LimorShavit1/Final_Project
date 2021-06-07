@@ -41,6 +41,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 
 app.use(morgan('dev'));
 
+
 app.use('/uploads', express.static('uploads'))
 
 app.get('/', (req, res) => {
