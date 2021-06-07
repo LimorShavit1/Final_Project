@@ -37,7 +37,7 @@ mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS
 //     app.get("*", (req, res) => {
 //         res.sendFile(path.resolve(__dirname, "../", "client", "build", "index.html"));
 //     });
-// }
+
 
 app.use(morgan('dev'));
 
